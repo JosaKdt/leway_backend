@@ -1,60 +1,49 @@
-from datetime import datetime, timedelta, timezone
-from typing import Optional
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
+from datetime import datetime, timedelta
+from jose import jwt
 from app.core.config import settings
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
-    """Hash un mot de passe en clair avec bcrypt."""
-    return pwd_context.hash(password)
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Vérifie un mot de passe en clair contre son hash bcrypt."""
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(
+        plain_password.encode('utf-8'),
+        hashed_password.encode('utf-8')
+    )
 
 
 def create_access_token(
     subject: str,
     role: str = "bachelier",
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None
 ) -> str:
-    """
-    Génère un JWT.
-    - role='bachelier' → expire dans 24h
-    - role='admin'     → expire dans 8h
-    """
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    elif role == "admin":
-        expire = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES_ADMIN
-        )
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES_BACHELIER
-        )
-
-    payload = {
-        "sub": subject,   # id de l'utilisateur (UUID en string)
+    expire_minutes = (
+        settings.ACCESS_TOKEN_EXPIRE_MINUTES_BACHELIER
+        if role == "bachelier"
+        else settings.ACCESS_TOKEN_EXPIRE_MINUTES_ADMIN
+    )
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=expire_minutes)
+    )
+    to_encode = {
+        "sub": subject,
         "role": role,
         "exp": expire,
     }
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def decode_access_token(token: str) -> Optional[dict]:
-    """
-    Décode et valide un JWT.
-    Retourne le payload ou None si invalide/expiré.
-    """
+def decode_access_token(token: str) -> dict | None:
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        return jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
         )
-        return payload
-    except JWTError:
+    except Exception:
         return None
