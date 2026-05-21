@@ -1,141 +1,53 @@
-# LÉWAY — Backend API
+# LÉWAY Backend — FastAPI
 
-> **Plateforme d'orientation post-baccalauréat au Bénin**
-
-[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-green.svg)](https://fastapi.tiangolo.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)](https://postgresql.org)
-[![Status](https://img.shields.io/badge/Status-En%20développement-orange.svg)]()
+Plateforme d'aide à l'orientation post-baccalauréat pour les bacheliers béninois.
 
 ---
 
-## Table des matières
+## État actuel du projet (Mai 2026)
 
-- [Vue d'ensemble](#vue-densemble)
-- [Architecture](#architecture)
-- [Structure du projet](#structure-du-projet)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Lancer le serveur](#lancer-le-serveur)
-- [API Reference](#api-reference)
-- [Endpoints à implémenter](#endpoints-à-implémenter)
-- [Tests](#tests)
-- [Équipe](#équipe)
+### Ce qui est fait et fonctionnel
 
----
+**Backend (Marie)**
+- Auth complète : inscription, connexion, JWT Bearer
+- 199 filières béninoises insérées en base PostgreSQL (20 domaines)
+- CRUD filières avec filtres domaine et recherche
+- CRUD favoris
+- Profil bachelier (GET + PATCH)
 
-## Vue d'ensemble
+**App Flutter (Marie)**
+- Connexion réelle au backend (JWT)
+- Navigation filières par domaine (grille 20 domaines → liste → comparaison)
+- Recherche globale et par domaine
+- Comparaison jusqu'à 3 filières
+- Profil bachelier connecté à l'API
+- Cache local des filières (6h) — fallback offline
+- URL auto-détectée selon plateforme (Android : `10.0.2.2:8000`, Windows : `127.0.0.1:8000`)
 
-LÉWAY est une **plateforme d'aide à l'orientation post-baccalauréat** conçue pour les bacheliers béninois. Elle croise trois sources de données pour recommander les filières les plus adaptées à chaque profil :
+### Ce qui reste à faire (Folawè)
 
-| Source | Description |
+| Endpoint | Description |
 |---|---|
-| **Profil psychométrique RIASEC** | Questionnaire 28 items — 6 dimensions (Réaliste, Investigateur, Artistique, Social, Entrepreneur, Conventionnel) |
-| **Données marché béninois** | Salaires médians, taux d'insertion, durée réelle des études, 35 filières |
-| **Impact IA sur les métiers** | Score tendance IA (0=Croissance → 3=Fortement affecté) |
+| `POST /api/questionnaire/submit` | Soumettre réponses RIASEC → déclencher scoring |
+| `GET /api/recommandations/{id_bachelier}` | Top 5 filières recommandées + justification LLM |
+| `GET /api/profil-riasec/{id_bachelier}` | Scores RIASEC calculés |
 
-### Modèle d'intégration
-
-```
-LÉWAY Backend (ce repo — FastAPI)
-        ↕ HTTP + JWT
-App Mobile Flutter (Android)      ←── Marie (KOUDHOROT)
-        +
-Web React.js (Bolt)               ←── Les deux applis partagent le même backend
-        ↕
-Moteur de scoring RIASEC          ←── Chéri (à intégrer sur port 8000)
-        ↕
-LLM Claude Haiku / Ollama         ←── Génération justifications Top 5
-```
+> Le Flutter a déjà les appels préparés dans `api_service.dart`. Dès que ces 3 endpoints existent, la connexion est immédiate.
 
 ---
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                    LÉWAY BACKEND (FastAPI)                    │
-│                                                              │
-│  ┌─────────────────────────────────────────────────────────┐ │
-│  │  ENDPOINTS DISPONIBLES (Marie)                          │ │
-│  │                                                         │ │
-│  │  POST /api/auth/register  ── Inscription bachelier      │ │
-│  │  POST /api/auth/login     ── Connexion JWT              │ │
-│  │  GET  /api/auth/me        ── Profil connecté            │ │
-│  │  GET  /api/filieres       ── Liste 35 filières          │ │
-│  │  GET  /api/filieres/{id}  ── Détail filière             │ │
-│  │  GET  /api/favoris        ── Mes favoris                │ │
-│  │  POST /api/favoris        ── Ajouter favori             │ │
-│  │  DELETE /api/favoris/{id} ── Supprimer favori           │ │
-│  │  GET  /api/bacheliers/me  ── Mon profil                 │ │
-│  │  PATCH /api/bacheliers/me ── Mettre à jour profil       │ │
-│  └─────────────────────────────────────────────────────────┘ │
-│                                                              │
-│  ┌─────────────────────────────────────────────────────────┐ │
-│  │  ENDPOINTS À IMPLÉMENTER (Chéri)                        │ │
-│  │                                                         │ │
-│  │  POST /api/questionnaire/submit  ── Soumettre réponses  │ │
-│  │  GET  /api/recommandations/{id}  ── Top 5 filières      │ │
-│  │  GET  /api/profil-riasec/{id}    ── Scores RIASEC       │ │
-│  └─────────────────────────────────────────────────────────┘ │
-│                                                              │
-└──────────────────────────┬───────────────────────────────────┘
-                           │
-              ┌────────────┴────────────┐
-              │                         │
-     ┌────────▼────────┐      ┌─────────▼────────┐
-     │   PostgreSQL 15  │      │    Redis 7.2      │
-     │   9 tables       │      │    Cache scoring  │
-     └─────────────────┘      └──────────────────┘
-```
-
----
-
-## Structure du projet
-
-```
-leway_backend/
-│
-├── app/
-│   ├── __init__.py
-│   │
-│   ├── api/
-│   │   ├── __init__.py
-│   │   ├── auth.py          ← POST register / login / GET me
-│   │   ├── filieres.py      ← GET liste + détail filières
-│   │   ├── favoris.py       ← GET / POST / DELETE favoris
-│   │   ├── bacheliers.py    ← GET / PATCH profil bachelier
-│   │   │
-│   │   │   ── À créer (Chéri) ──
-│   │   ├── questionnaire.py ← POST submit réponses RIASEC
-│   │   └── recommandations.py ← GET Top 5 + scores RIASEC
-│   │
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── config.py        ← Settings, variables d'environnement
-│   │   ├── database.py      ← Connexion PostgreSQL (SQLModel)
-│   │   ├── security.py      ← Hash bcrypt + JWT jose
-│   │   └── dependencies.py  ← get_current_bachelier (JWT guard)
-│   │
-│   ├── models/              ← Tables PostgreSQL (SQLModel)
-│   │   ├── __init__.py
-│   │   ├── bachelier.py
-│   │   ├── administrateur.py
-│   │   ├── filiere.py
-│   │   ├── universite.py
-│   │   ├── formation.py
-│   │   ├── profil_psychometrique.py
-│   │   ├── recommandation.py
-│   │   ├── score_compatibilite.py
-│   │   └── favoris.py
-│   │
-│   ├── main.py              ← Point d'entrée FastAPI
-│   └── seed.py              ← Seed 35 filières béninoises
-│
-├── .env.example             ← Variables d'environnement (template)
-├── .gitignore
-├── requirements.txt
-└── README.md
+LÉWAY Backend (FastAPI — port 8000)
+        ↕ HTTP + JWT Bearer
+App Mobile Flutter (Android/Windows)   ← Marie
+        +
+Moteur de scoring RIASEC               ← Folawè (à intégrer)
+        ↕
+LLM Claude Haiku / Ollama              ← Génération justifications Top 5
+        ↕
+PostgreSQL 15 (9 tables) + Redis 7.2
 ```
 
 ---
@@ -146,82 +58,77 @@ leway_backend/
 
 - Python 3.12+
 - PostgreSQL 15+
-- pip
 
-### Installation locale
+### Démarrage local
 
 ```bash
 # 1. Cloner le repo
 git clone https://github.com/JosaKdt/leway-backend.git
 cd leway-backend
 
-# 2. Créer l'environnement virtuel
-python -m venv .venv
-.venv\Scripts\activate          # Windows
-# source .venv/bin/activate     # Linux / macOS
+# 2. Environnement virtuel
+python -m venv venv
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # Linux / macOS
 
-# 3. Installer les dépendances
+# 3. Dépendances
 pip install -r requirements.txt
 
-# 4. Créer la base de données PostgreSQL
+# 4. Base de données
 psql -U postgres -c "CREATE DATABASE leway_db;"
 
-# 5. Configurer les variables d'environnement
+# 5. Variables d'environnement
 copy .env.example .env
 # Éditer .env avec tes valeurs
 
-# 6. Lancer le serveur (les tables se créent automatiquement)
-uvicorn app.main:app --reload --port 8000
-
-# 7. Peupler les 35 filières béninoises
-python -m app.seed
+# 6. Lancer le serveur
+uvicorn app.main:app --reload --port 8000 --host 0.0.0.0
 ```
 
----
+> **Important :** `--host 0.0.0.0` est obligatoire pour que l'émulateur Android puisse joindre le serveur.
 
-## Configuration
-
-Copier `.env.example` en `.env` et renseigner :
+### Variables d'environnement (.env)
 
 ```env
-# Base de données
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=ton_mot_de_passe
-POSTGRES_DB=leway_db
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
 DATABASE_URL=postgresql://postgres:ton_mot_de_passe@localhost:5432/leway_db
-
-# Redis (optionnel en dev)
 REDIS_URL=redis://localhost:6379/0
 
-# JWT
-SECRET_KEY=leway_secret_key_minimum_32_caracteres_ok
+SECRET_KEY=leway_secret_key_minimum_32_caracteres
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES_BACHELIER=1440
 ACCESS_TOKEN_EXPIRE_MINUTES_ADMIN=480
 
-# LLM
-LLM_MODE=cloud           # cloud = Claude Haiku | local = Ollama
-ANTHROPIC_API_KEY=       # Clé Claude pour LLM_MODE=cloud
+LLM_MODE=cloud
+ANTHROPIC_API_KEY=
 OLLAMA_BASE_URL=http://localhost:11434
 
-# App
 APP_ENV=development
 APP_VERSION=1.0.0
 ```
 
 ---
 
-## Lancer le serveur
+## Base de données
+
+### Remettre les filières après un DROP
+
+Si tu recrées la base, réexécuter le script SQL :
 
 ```bash
-# Développement (rechargement automatique)
-uvicorn app.main:app --reload --port 8000
+psql -U postgres -d leway_db -f insert_filieres.sql
+```
 
-# Documentation interactive
-# http://localhost:8000/docs      ← Swagger UI
-# http://localhost:8000/redoc     ← ReDoc
+Le fichier `insert_filieres.sql` (199 filières) est versionné dans ce repo.
+
+### Nettoyer les doublons d'encodage (Windows)
+
+Si tu constates des doublons (`Ingénierie` / `Ing├®nierie`) après import sur Windows :
+
+```sql
+UPDATE filiere SET domaine = 'Ingénierie'  WHERE domaine ILIKE 'Ing%nierie';
+UPDATE filiere SET domaine = 'Santé'       WHERE domaine ILIKE 'Sant%';
+UPDATE filiere SET domaine = 'Education'   WHERE domaine ILIKE '%ducation%';
+UPDATE filiere SET domaine = 'Economie'    WHERE domaine ILIKE '%conomie%';
 ```
 
 ---
@@ -230,9 +137,13 @@ uvicorn app.main:app --reload --port 8000
 
 ### Auth
 
-#### `POST /api/auth/register`
-Inscription d'un nouveau bachelier. Retourne un JWT directement.
+| Méthode | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/api/auth/register` | Inscription bachelier — retourne JWT | Non |
+| POST | `/api/auth/login` | Connexion — retourne JWT | Non |
+| GET | `/api/auth/me` | Profil du bachelier connecté | JWT |
 
+**Register — body :**
 ```json
 {
   "nom": "Mensah",
@@ -240,12 +151,19 @@ Inscription d'un nouveau bachelier. Retourne un JWT directement.
   "email": "kofi@email.com",
   "telephone": "+22997000000",
   "mot_de_passe": "password123",
-  "serie_bac": "C",
-  "notes_bac": null
+  "serie_bac": "C"
 }
 ```
 
-**Response 201 :**
+**Login — body :**
+```json
+{
+  "email": "kofi@email.com",
+  "mot_de_passe": "password123"
+}
+```
+
+**Réponse login/register :**
 ```json
 {
   "access_token": "eyJhbGci...",
@@ -261,86 +179,101 @@ Inscription d'un nouveau bachelier. Retourne un JWT directement.
 }
 ```
 
-#### `POST /api/auth/login`
-Connexion bachelier.
-
-```json
-{
-  "email": "kofi@email.com",
-  "mot_de_passe": "password123"
-}
-```
-
-#### `GET /api/auth/me`
-Profil du bachelier connecté. Nécessite `Authorization: Bearer {token}`.
-
 ---
 
 ### Filières
 
-#### `GET /api/filieres`
-Liste les 35 filières béninoises. Paramètres optionnels : `domaine`, `search`.
+| Méthode | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/api/filieres` | Liste des 199 filières (filtres optionnels) | Non |
+| GET | `/api/filieres/{id_filiere}` | Détail d'une filière | Non |
+| POST | `/api/filieres` | Créer une filière (admin) | Non |
 
+**Paramètres de filtre :**
 ```
-GET /api/filieres?domaine=Santé
-GET /api/filieres?search=informatique
+GET /api/filieres?domaine=Informatique
+GET /api/filieres?search=gestion
 ```
 
-#### `GET /api/filieres/{id_filiere}`
-Détail complet d'une filière.
+**Structure d'une filière :**
+```json
+{
+  "id_filiere": "uuid",
+  "nom": "Génie Logiciel",
+  "domaine": "Informatique",
+  "duree_theorique": 3,
+  "salaire_median_p50": 250000,
+  "taux_insertion": 0.85,
+  "indice_saturation": 0.30,
+  "tendance_ia": 0,
+  "tendance_curricula_marche": 0.70,
+  "profil_riasec_dominant": {"R": 0.4, "I": 0.9, "A": 0.3, "S": 0.4, "E": 0.6, "C": 0.7}
+}
+```
+
+**Valeurs `tendance_ia` :**
+
+| Valeur | Signification |
+|---|---|
+| 0 | En forte croissance |
+| 1 | Stable |
+| 2 | En transformation |
+| 3 | Fortement affecté par l'IA |
 
 ---
 
-### Favoris (nécessite JWT)
+### Bachelier
 
-#### `GET /api/favoris`
-Mes filières sauvegardées.
+| Méthode | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/api/bacheliers/me` | Profil complet | JWT |
+| PATCH | `/api/bacheliers/me` | Mettre à jour le profil | JWT |
 
-#### `POST /api/favoris`
+**PATCH — body (tous les champs optionnels) :**
+```json
+{
+  "nom": "Mensah",
+  "telephone": "+22997111111",
+  "serie_bac": "D"
+}
+```
+
+---
+
+### Favoris
+
+| Méthode | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/api/favoris` | Mes favoris | JWT |
+| POST | `/api/favoris` | Ajouter un favori | JWT |
+| DELETE | `/api/favoris/{id_favori}` | Supprimer un favori | JWT |
+
+**POST — body :**
 ```json
 { "id_filiere": "uuid-filiere" }
 ```
 
-#### `DELETE /api/favoris/{id_favori}`
-Supprimer un favori.
-
 ---
 
-### Bachelier (nécessite JWT)
+### Endpoints à implémenter — Folawè
 
-#### `GET /api/bacheliers/me`
-Mon profil complet.
+> Ces 3 endpoints sont attendus par le Flutter. Les appels sont déjà préparés dans `api_service.dart`.
 
-#### `PATCH /api/bacheliers/me`
-```json
-{
-  "nom": "Mensah",
-  "telephone": "+22997111111"
-}
-```
+#### `POST /api/questionnaire/submit` — JWT requis
 
----
+Soumet les 28 réponses RIASEC et déclenche le calcul.
 
-## Endpoints à implémenter (Chéri)
-
-> Ces endpoints sont attendus par l'app Flutter. Marie a déjà préparé les appels dans `api_service.dart`.
-
-### `POST /api/questionnaire/submit`
-
-Soumet les réponses au questionnaire RIASEC et déclenche le calcul des scores.
-
-**Request :**
+**Body attendu :**
 ```json
 {
   "reponses": [
     { "question_index": 0, "score": 5 },
-    { "question_index": 1, "score": 3 },
-    ...
+    { "question_index": 1, "score": 3 }
   ]
 }
 ```
 
-**Response attendue :**
+**Réponse attendue :**
 ```json
 {
   "profil_riasec": {
@@ -352,52 +285,67 @@ Soumet les réponses au questionnaire RIASEC et déclenche le calcul des scores.
 }
 ```
 
----
+#### `GET /api/recommandations/{id_bachelier}` — JWT requis
 
-### `GET /api/recommandations/{id_bachelier}`
+Retourne le Top 5 filières recommandées avec justification LLM.
 
-Retourne le Top 5 des filières recommandées avec justification LLM.
-
-**Response attendue :**
+**Réponse attendue :**
 ```json
 {
   "top_5": [
     {
       "id_filiere": "uuid",
-      "nom": "Génie Informatique & Systèmes",
+      "nom": "Génie Informatique",
       "score_global": 91,
       "score_riasec": 88,
       "score_marche": 95,
       "score_ia": 92,
-      "tendance_ia": "croissance",
       "justification": "Votre profil Investigateur dominant (I) correspond parfaitement..."
     }
   ]
 }
 ```
 
-> **Note :** La décomposition du score suit la formule :
-> `score_global = (score_riasec × 0.60) + (score_marche × 0.25) + (score_ia × 0.15)`
+> Formule du score : `score_global = (score_riasec × 0.60) + (score_marche × 0.25) + (score_ia × 0.15)`
+
+#### `GET /api/profil-riasec/{id_bachelier}` — JWT requis
+
+Retourne les scores RIASEC calculés du bachelier.
 
 ---
 
-### `GET /api/profil-riasec/{id_bachelier}`
+## Structure du projet
 
-Retourne le profil RIASEC calculé du bachelier.
-
----
-
-## Tests
-
-```bash
-# Tous les tests
-pytest
-
-# Avec coverage
-pytest --cov=app --cov-report=term-missing
-
-# Un module spécifique
-pytest tests/test_auth.py -v
+```
+leway_backend/
+├── app/
+│   ├── api/
+│   │   ├── auth.py           ✅ POST register / login / GET me
+│   │   ├── filieres.py       ✅ GET liste + détail + POST
+│   │   ├── favoris.py        ✅ GET / POST / DELETE
+│   │   ├── bacheliers.py     ✅ GET / PATCH profil
+│   │   ├── questionnaire.py  ⏳ À créer — Folawè
+│   │   └── recommandations.py ⏳ À créer — Folawè
+│   ├── core/
+│   │   ├── config.py         ✅ Settings pydantic-settings
+│   │   ├── database.py       ✅ SQLModel + PostgreSQL
+│   │   ├── security.py       ✅ bcrypt + JWT jose
+│   │   └── dependencies.py   ✅ JWT guards bachelier + admin
+│   ├── models/
+│   │   ├── bachelier.py      ✅
+│   │   ├── administrateur.py ✅
+│   │   ├── filiere.py        ✅
+│   │   ├── universite.py     ✅
+│   │   ├── formation.py      ✅
+│   │   ├── profil_psychometrique.py ✅
+│   │   ├── recommandation.py ✅
+│   │   ├── score_compatibilite.py   ✅
+│   │   └── favoris.py        ✅
+│   └── main.py               ✅ Point d'entrée FastAPI
+├── insert_filieres.sql        ✅ 199 filières béninoises
+├── .env.example
+├── requirements.txt
+└── README.md
 ```
 
 ---
@@ -405,10 +353,10 @@ pytest tests/test_auth.py -v
 ## Convention Git
 
 ```
-main          → code stable uniquement
-develop       → branche de travail commune
-feature/xxx   → nouvelle fonctionnalité (ex: feature/questionnaire-endpoint)
-fix/xxx       → correction de bug
+main        → code stable uniquement
+develop     → branche de travail commune
+feature/xxx → nouvelle fonctionnalité
+fix/xxx     → correction de bug
 ```
 
 **Workflow :**
@@ -419,12 +367,25 @@ fix/xxx       → correction de bug
 
 ---
 
+## Documentation interactive
+
+Avec le serveur démarré :
+
+```
+http://localhost:8000/docs    ← Swagger UI (tester les endpoints)
+http://localhost:8000/redoc   ← ReDoc
+```
+
+Pour tester les routes protégées dans `/docs` : cliquer **Authorize** → coller le token JWT obtenu au login.
+
+---
+
 ## Équipe
 
 | Rôle | Nom | Périmètre |
 |---|---|---|
-| Frontend Flutter + Backend base | KOUDHOROT Marie Josaphat | Auth, Filières, Favoris, Bacheliers, Seed |
-| Moteur RIASEC + LLM + Intégration | AGLI Folawè | Questionnaire, Recommandations, Scoring |
+| Frontend Flutter + Backend base | KOUDHOROT Marie Josaphat | Auth, Filières, Favoris, Bacheliers |
+| Moteur RIASEC + LLM + Intégration | AGLI Folawè Milarépa | Questionnaire, Recommandations, Scoring |
 
 **Encadrement :** Arnaud Rama AGLI
 
