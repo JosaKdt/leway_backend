@@ -7,11 +7,7 @@ from uuid import UUID, uuid4
 
 class Filiere(SQLModel, table=True):
     """
-    Table FILIERE — SLR Léway
-
-    Base de connaissances des filières béninoises.
-    Variable tendance_curricula_marche : facteur aggravant indépendant (H3)
-    traitée comme variable EXPLICITE dans le Weighted Score, distincte de tendance_ia.
+    Table FILIERE — SLR ORIAB
 
     tendance_ia : échelle 0-3 (automatisabilité du secteur)
         0 = En forte croissance
@@ -52,18 +48,27 @@ class Filiere(SQLModel, table=True):
         default=None,
         sa_column=Column(Float, nullable=True),
     )
-    # Échelle 0-3 — CHECK(tendance_ia BETWEEN 0 AND 3)
     tendance_ia: Optional[int] = Field(
         default=None,
         sa_column=Column(Integer, nullable=True),
     )
-    # H3 — variable explicite et indépendante (alignement curricula/marché)
+    # H3 — variable explicite (alignement curricula/marché)
     tendance_curricula_marche: Optional[float] = Field(
         default=None,
         sa_column=Column(Float, nullable=True),
     )
-    # JSONB : profil RIASEC idéal de la filière  ex: {"R": 20, "I": 80, "A": 40, ...}
+    # Profil RIASEC idéal de la filière  ex: {"R": 20, "I": 80, ...}
     profil_riasec_dominant: Optional[Dict[str, Any]] = Field(
+        default=None,
+        sa_column=Column(JSONB, nullable=True),
+    )
+    # Règles d'élimination — appliquées avant le moteur LLM
+    veto_factors: Optional[Dict[str, Any]] = Field(
+        default=None,
+        sa_column=Column(JSONB, nullable=True),
+    )
+    # Poids de scoring spécifiques à la filière
+    poids_scoring: Optional[Dict[str, Any]] = Field(
         default=None,
         sa_column=Column(JSONB, nullable=True),
     )
@@ -81,6 +86,8 @@ class FiliereCreate(SQLModel):
     tendance_ia: Optional[int] = None
     tendance_curricula_marche: Optional[float] = None
     profil_riasec_dominant: Optional[Dict[str, Any]] = None
+    veto_factors: Optional[Dict[str, Any]] = None
+    poids_scoring: Optional[Dict[str, Any]] = None
 
 
 class FiliereRead(SQLModel):
@@ -94,3 +101,5 @@ class FiliereRead(SQLModel):
     tendance_ia: Optional[int]
     tendance_curricula_marche: Optional[float]
     profil_riasec_dominant: Optional[Dict[str, Any]]
+    veto_factors: Optional[Dict[str, Any]]
+    poids_scoring: Optional[Dict[str, Any]]

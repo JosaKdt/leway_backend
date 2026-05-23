@@ -8,8 +8,9 @@ from datetime import datetime
 
 class Administrateur(SQLModel, table=True):
     """
-    Table ADMINISTRATEUR — SLR Léway
-    Hérite des attributs Utilisateur + droits supplémentaires.
+    Table ADMINISTRATEUR — SLR ORIAB
+    role      : toujours 'administrateur' — distingue du bachelier dans le JWT
+    niveau_acces : droits internes 'super_admin' | 'admin' | 'moderateur'
     Token JWT durée : 8h (ACCESS_TOKEN_EXPIRE_MINUTES_ADMIN=480)
     """
     __tablename__ = "administrateur"
@@ -30,8 +31,14 @@ class Administrateur(SQLModel, table=True):
     mot_de_passe_hash: str = Field(
         sa_column=Column(String(255), nullable=False)
     )
-    # Niveaux : 'super_admin' | 'admin' | 'moderateur'
+    # role Utilisateur : toujours 'administrateur' pour cette table
     role: str = Field(
+        default="administrateur",
+        sa_column=Column(String(20), nullable=False, server_default="administrateur")
+    )
+    # niveau_acces : droits internes de l'admin
+    niveau_acces: str = Field(
+        default="admin",
         sa_column=Column(String(50), nullable=False, server_default="admin")
     )
     date_creation: Optional[datetime] = Field(
@@ -51,7 +58,7 @@ class AdministrateurCreate(SQLModel):
     prenom: str
     email: str
     mot_de_passe: str
-    role: str = "admin"
+    niveau_acces: str = "admin"
 
 
 class AdministrateurRead(SQLModel):
@@ -60,4 +67,5 @@ class AdministrateurRead(SQLModel):
     prenom: str
     email: str
     role: str
+    niveau_acces: str
     date_creation: Optional[datetime]

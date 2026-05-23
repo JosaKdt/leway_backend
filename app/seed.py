@@ -1,10 +1,11 @@
 """
-Script de seed — Filières béninoises LÉWAY
+Script de seed — Filières et Universités béninoises ORIAB
 Lance avec : python -m app.seed
 """
-from sqlmodel import Session
+from sqlmodel import Session, select
 from app.core.database import engine, create_db_and_tables
 from app.models.filiere import Filiere
+from app.models.universite import Universite
 
 FILIERES = [
     {
@@ -17,6 +18,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.9,
         "profil_riasec_dominant": {"R": 60, "I": 90, "A": 40, "S": 30, "E": 50, "C": 70},
+        "veto_factors": {"budget_min_fcfa": 150000, "duree_max_ans": 5},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Médecine Générale",
@@ -28,6 +31,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.8,
         "profil_riasec_dominant": {"R": 40, "I": 80, "A": 20, "S": 90, "E": 40, "C": 60},
+        "veto_factors": {"budget_min_fcfa": 300000, "serie_bac_requise": ["C", "D"]},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Droit & Sciences Juridiques",
@@ -39,6 +44,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.6,
         "profil_riasec_dominant": {"R": 20, "I": 60, "A": 30, "S": 70, "E": 80, "C": 75},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Économie & Gestion",
@@ -50,6 +57,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.7,
         "profil_riasec_dominant": {"R": 20, "I": 60, "A": 20, "S": 50, "E": 85, "C": 80},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Agronomie & Développement Rural",
@@ -61,6 +70,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.8,
         "profil_riasec_dominant": {"R": 80, "I": 60, "A": 30, "S": 50, "E": 40, "C": 50},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Pharmacie",
@@ -72,6 +83,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.75,
         "profil_riasec_dominant": {"R": 40, "I": 85, "A": 20, "S": 70, "E": 30, "C": 80},
+        "veto_factors": {"budget_min_fcfa": 250000, "serie_bac_requise": ["C", "D"]},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Génie Civil & BTP",
@@ -83,6 +96,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.7,
         "profil_riasec_dominant": {"R": 90, "I": 70, "A": 30, "S": 30, "E": 50, "C": 65},
+        "veto_factors": {"budget_min_fcfa": 150000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Sciences de l'Éducation",
@@ -94,6 +109,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.5,
         "profil_riasec_dominant": {"R": 20, "I": 50, "A": 40, "S": 90, "E": 40, "C": 60},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Comptabilité & Finance",
@@ -105,6 +122,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.65,
         "profil_riasec_dominant": {"R": 20, "I": 65, "A": 15, "S": 40, "E": 60, "C": 90},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Génie Électrique & Électronique",
@@ -116,6 +135,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.8,
         "profil_riasec_dominant": {"R": 85, "I": 80, "A": 25, "S": 25, "E": 40, "C": 70},
+        "veto_factors": {"budget_min_fcfa": 120000, "serie_bac_requise": ["C", "D", "E"]},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Journalisme & Communication",
@@ -127,6 +148,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.5,
         "profil_riasec_dominant": {"R": 20, "I": 50, "A": 80, "S": 75, "E": 70, "C": 40},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Mathématiques & Physique",
@@ -138,6 +161,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.6,
         "profil_riasec_dominant": {"R": 40, "I": 95, "A": 30, "S": 30, "E": 30, "C": 75},
+        "veto_factors": {"budget_min_fcfa": 80000, "serie_bac_requise": ["C", "D"]},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Sociologie & Anthropologie",
@@ -149,6 +174,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.4,
         "profil_riasec_dominant": {"R": 15, "I": 65, "A": 50, "S": 85, "E": 40, "C": 45},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Architecture & Urbanisme",
@@ -160,6 +187,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.7,
         "profil_riasec_dominant": {"R": 70, "I": 65, "A": 85, "S": 40, "E": 55, "C": 60},
+        "veto_factors": {"budget_min_fcfa": 200000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Marketing & Commerce International",
@@ -171,6 +200,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.65,
         "profil_riasec_dominant": {"R": 20, "I": 50, "A": 55, "S": 70, "E": 90, "C": 55},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Sciences Infirmières",
@@ -182,6 +213,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.75,
         "profil_riasec_dominant": {"R": 50, "I": 60, "A": 20, "S": 90, "E": 30, "C": 65},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Géologie & Mines",
@@ -193,6 +226,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.65,
         "profil_riasec_dominant": {"R": 80, "I": 80, "A": 20, "S": 25, "E": 40, "C": 60},
+        "veto_factors": {"budget_min_fcfa": 120000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Psychologie",
@@ -204,6 +239,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.55,
         "profil_riasec_dominant": {"R": 15, "I": 70, "A": 45, "S": 90, "E": 45, "C": 50},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Informatique de Gestion",
@@ -215,6 +252,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.8,
         "profil_riasec_dominant": {"R": 50, "I": 80, "A": 25, "S": 35, "E": 55, "C": 80},
+        "veto_factors": {"budget_min_fcfa": 120000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Biochimie & Biologie Moléculaire",
@@ -226,6 +265,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.7,
         "profil_riasec_dominant": {"R": 50, "I": 90, "A": 25, "S": 40, "E": 25, "C": 70},
+        "veto_factors": {"budget_min_fcfa": 100000, "serie_bac_requise": ["C", "D"]},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Gestion des Ressources Humaines",
@@ -237,6 +278,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.6,
         "profil_riasec_dominant": {"R": 15, "I": 50, "A": 30, "S": 85, "E": 75, "C": 70},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Chimie Industrielle",
@@ -248,6 +291,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.65,
         "profil_riasec_dominant": {"R": 70, "I": 85, "A": 20, "S": 25, "E": 30, "C": 75},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Tourisme & Hôtellerie",
@@ -259,6 +304,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.55,
         "profil_riasec_dominant": {"R": 30, "I": 35, "A": 60, "S": 80, "E": 75, "C": 55},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Génie Mécanique & Industriel",
@@ -270,6 +317,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.7,
         "profil_riasec_dominant": {"R": 90, "I": 75, "A": 25, "S": 20, "E": 45, "C": 65},
+        "veto_factors": {"budget_min_fcfa": 120000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Arts & Design Graphique",
@@ -281,6 +330,8 @@ FILIERES = [
         "tendance_ia": 3,
         "tendance_curricula_marche": 0.4,
         "profil_riasec_dominant": {"R": 30, "I": 40, "A": 95, "S": 45, "E": 55, "C": 35},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Sciences Vétérinaires",
@@ -292,6 +343,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.7,
         "profil_riasec_dominant": {"R": 65, "I": 75, "A": 20, "S": 60, "E": 35, "C": 55},
+        "veto_factors": {"budget_min_fcfa": 150000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Administration Publique",
@@ -303,6 +356,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.5,
         "profil_riasec_dominant": {"R": 15, "I": 55, "A": 20, "S": 65, "E": 70, "C": 85},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Énergies Renouvelables",
@@ -314,6 +369,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.9,
         "profil_riasec_dominant": {"R": 80, "I": 80, "A": 25, "S": 30, "E": 50, "C": 65},
+        "veto_factors": {"budget_min_fcfa": 120000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Santé Publique & Épidémiologie",
@@ -325,6 +382,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.8,
         "profil_riasec_dominant": {"R": 30, "I": 80, "A": 20, "S": 80, "E": 45, "C": 65},
+        "veto_factors": {"budget_min_fcfa": 150000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Logistique & Transport",
@@ -336,6 +395,8 @@ FILIERES = [
         "tendance_ia": 2,
         "tendance_curricula_marche": 0.65,
         "profil_riasec_dominant": {"R": 50, "I": 55, "A": 20, "S": 45, "E": 70, "C": 75},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Linguistique & Lettres Modernes",
@@ -347,6 +408,8 @@ FILIERES = [
         "tendance_ia": 3,
         "tendance_curricula_marche": 0.35,
         "profil_riasec_dominant": {"R": 10, "I": 60, "A": 85, "S": 65, "E": 40, "C": 50},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Data Science & Intelligence Artificielle",
@@ -358,6 +421,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.95,
         "profil_riasec_dominant": {"R": 50, "I": 95, "A": 35, "S": 30, "E": 45, "C": 75},
+        "veto_factors": {"budget_min_fcfa": 150000, "serie_bac_requise": ["C", "D"]},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Cybersécurité & Réseaux",
@@ -369,6 +434,8 @@ FILIERES = [
         "tendance_ia": 0,
         "tendance_curricula_marche": 0.9,
         "profil_riasec_dominant": {"R": 60, "I": 88, "A": 25, "S": 25, "E": 45, "C": 80},
+        "veto_factors": {"budget_min_fcfa": 150000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Finance Islamique & Microfinance",
@@ -380,6 +447,8 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.75,
         "profil_riasec_dominant": {"R": 15, "I": 65, "A": 20, "S": 55, "E": 70, "C": 85},
+        "veto_factors": {"budget_min_fcfa": 100000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
     },
     {
         "nom": "Agroalimentaire & Nutrition",
@@ -391,27 +460,164 @@ FILIERES = [
         "tendance_ia": 1,
         "tendance_curricula_marche": 0.75,
         "profil_riasec_dominant": {"R": 65, "I": 70, "A": 30, "S": 50, "E": 40, "C": 65},
+        "veto_factors": {"budget_min_fcfa": 80000},
+        "poids_scoring": {"riasec": 0.60, "marche": 0.25, "ia": 0.15},
+    },
+]
+
+UNIVERSITES = [
+    {
+        "nom": "Université d'Abomey-Calavi (UAC)",
+        "type": "public",
+        "localisation": "Abomey-Calavi",
+        "cout_annuel_min": 30000,
+        "cout_annuel_max": 80000,
+        "taux_reussite": 0.62,
+        "accreditation_mesrs": True,
+        "accreditation_cames": True,
+    },
+    {
+        "nom": "Université Nationale des Sciences, Technologies, Ingénierie et Mathématiques (UNSTIM)",
+        "type": "public",
+        "localisation": "Abomey",
+        "cout_annuel_min": 40000,
+        "cout_annuel_max": 100000,
+        "taux_reussite": 0.65,
+        "accreditation_mesrs": True,
+        "accreditation_cames": True,
+    },
+    {
+        "nom": "Université Africaine de Technologie et de Management (UATM)",
+        "type": "prive",
+        "localisation": "Cotonou",
+        "cout_annuel_min": 350000,
+        "cout_annuel_max": 600000,
+        "taux_reussite": 0.74,
+        "accreditation_mesrs": True,
+        "accreditation_cames": False,
+    },
+    {
+        "nom": "École Nationale d'Économie Appliquée et de Management (ENEAM)",
+        "type": "public",
+        "localisation": "Cotonou",
+        "cout_annuel_min": 50000,
+        "cout_annuel_max": 120000,
+        "taux_reussite": 0.70,
+        "accreditation_mesrs": True,
+        "accreditation_cames": True,
+    },
+    {
+        "nom": "École Polytechnique d'Abomey-Calavi (EPAC)",
+        "type": "public",
+        "localisation": "Abomey-Calavi",
+        "cout_annuel_min": 40000,
+        "cout_annuel_max": 90000,
+        "taux_reussite": 0.68,
+        "accreditation_mesrs": True,
+        "accreditation_cames": True,
+    },
+    {
+        "nom": "Faculté des Sciences Agronomiques (FSA)",
+        "type": "public",
+        "localisation": "Abomey-Calavi",
+        "cout_annuel_min": 30000,
+        "cout_annuel_max": 70000,
+        "taux_reussite": 0.66,
+        "accreditation_mesrs": True,
+        "accreditation_cames": True,
+    },
+    {
+        "nom": "Faculté des Sciences de la Santé (FSS)",
+        "type": "public",
+        "localisation": "Cotonou",
+        "cout_annuel_min": 50000,
+        "cout_annuel_max": 150000,
+        "taux_reussite": 0.72,
+        "accreditation_mesrs": True,
+        "accreditation_cames": True,
+    },
+    {
+        "nom": "Institut National Médico-Sanitaire (INMeS)",
+        "type": "public",
+        "localisation": "Cotonou",
+        "cout_annuel_min": 40000,
+        "cout_annuel_max": 100000,
+        "taux_reussite": 0.75,
+        "accreditation_mesrs": True,
+        "accreditation_cames": False,
+    },
+    {
+        "nom": "Université de Parakou (UP)",
+        "type": "public",
+        "localisation": "Parakou",
+        "cout_annuel_min": 30000,
+        "cout_annuel_max": 80000,
+        "taux_reussite": 0.60,
+        "accreditation_mesrs": True,
+        "accreditation_cames": True,
+    },
+    {
+        "nom": "Institut de Formation et de Recherche en Informatique (IFRI)",
+        "type": "public",
+        "localisation": "Abomey-Calavi",
+        "cout_annuel_min": 40000,
+        "cout_annuel_max": 90000,
+        "taux_reussite": 0.71,
+        "accreditation_mesrs": True,
+        "accreditation_cames": False,
+    },
+    {
+        "nom": "Université Protestante de l'Afrique de l'Ouest (UPAO)",
+        "type": "confessionnel",
+        "localisation": "Cotonou",
+        "cout_annuel_min": 400000,
+        "cout_annuel_max": 700000,
+        "taux_reussite": 0.78,
+        "accreditation_mesrs": True,
+        "accreditation_cames": False,
+    },
+    {
+        "nom": "Institut Supérieur de Technologie (IST)",
+        "type": "prive",
+        "localisation": "Cotonou",
+        "cout_annuel_min": 300000,
+        "cout_annuel_max": 550000,
+        "taux_reussite": 0.72,
+        "accreditation_mesrs": True,
+        "accreditation_cames": False,
     },
 ]
 
 
-def seed_filieres():
+def seed_filieres(session):
+    existing = session.exec(select(Filiere)).first()
+    if existing:
+        print("✅ Filières déjà présentes.")
+        return
+    for data in FILIERES:
+        session.add(Filiere(**data))
+    session.commit()
+    print(f"✅ {len(FILIERES)} filières insérées.")
+
+
+def seed_universites(session):
+    existing = session.exec(select(Universite)).first()
+    if existing:
+        print("✅ Universités déjà présentes.")
+        return
+    for data in UNIVERSITES:
+        session.add(Universite(**data))
+    session.commit()
+    print(f"✅ {len(UNIVERSITES)} universités insérées.")
+
+
+def seed_all():
     create_db_and_tables()
     with Session(engine) as session:
-        # Vérifier si déjà peuplé
         from sqlmodel import select
-        existing = session.exec(select(Filiere)).first()
-        if existing:
-            print("✅ Les filières sont déjà dans la base de données.")
-            return
-
-        for data in FILIERES:
-            filiere = Filiere(**data)
-            session.add(filiere)
-
-        session.commit()
-        print(f"✅ {len(FILIERES)} filières insérées avec succès !")
+        seed_filieres(session)
+        seed_universites(session)
 
 
 if __name__ == "__main__":
-    seed_filieres()
+    seed_all()

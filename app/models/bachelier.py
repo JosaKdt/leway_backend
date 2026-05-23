@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import Boolean, SQLModel, Field
 from sqlalchemy import Column, String, text
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from typing import Optional, Dict, Any
@@ -8,7 +8,7 @@ from datetime import datetime
 
 class Bachelier(SQLModel, table=True):
     """
-    Table BACHELIER — SLR Léway
+    Table BACHELIER — SLR ORIAB
     Clé primaire UUID pour protection contre les attaques IDOR.
     """
     __tablename__ = "bachelier"
@@ -34,7 +34,6 @@ class Bachelier(SQLModel, table=True):
         default=None,
         sa_column=Column(String(10), nullable=True)
     )
-    # JSONB : stocke les notes par matière  ex: {"Maths": 14, "SVT": 16}
     notes_bac: Optional[Dict[str, Any]] = Field(
         default=None,
         sa_column=Column(JSONB, nullable=True)
@@ -42,6 +41,12 @@ class Bachelier(SQLModel, table=True):
     mot_de_passe_hash: str = Field(
         sa_column=Column(String(255), nullable=False)
     )
+
+    role: str = Field(
+        default="bachelier",
+        sa_column=Column(String(20), nullable=False, server_default="bachelier")
+    )
+
     date_creation: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
@@ -50,23 +55,44 @@ class Bachelier(SQLModel, table=True):
             nullable=False,
         ),
     )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            TIMESTAMP(timezone=True),
+            server_default=text("NOW()"),
+            onupdate=text("NOW()"),
+            nullable=True,
+        ),
+    )
 
 
-# ─── Schémas Pydantic (read / create) ────────────────────────────────────────
+    is_verified: bool = Field(
+        default=False,
+        sa_column=Column(Boolean, nullable=False, server_default="false")
+    )
+    otp_code: Optional[str] = Field(
+        default=None,
+        sa_column=Column(String(6), nullable=True)
+    )
+    otp_expires_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(TIMESTAMP(timezone=True), nullable=True)
+    )
+
+
+# ─── Schémas Pydantic ─────────────────────────────────────────────────────────
 
 class BachelierCreate(SQLModel):
-    """Données attendues à la création d'un compte bachelier."""
     nom: str
     prenom: str
     email: str
     telephone: Optional[str] = None
     serie_bac: Optional[str] = None
     notes_bac: Optional[Dict[str, Any]] = None
-    mot_de_passe: str  # mot de passe en clair → sera hashé avant insertion
+    mot_de_passe: str
 
 
 class BachelierRead(SQLModel):
-    """Données renvoyées au frontend (sans le hash du mot de passe)."""
     id_bachelier: UUID
     nom: str
     prenom: str
@@ -75,3 +101,4 @@ class BachelierRead(SQLModel):
     serie_bac: Optional[str]
     notes_bac: Optional[Dict[str, Any]]
     date_creation: Optional[datetime]
+    updated_at: Optional[datetime]

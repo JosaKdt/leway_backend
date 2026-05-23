@@ -1,22 +1,17 @@
 from sqlmodel import SQLModel, Field
-from sqlalchemy import Column, Float, Integer, Text, ForeignKey
+from sqlalchemy import Column, Float, Integer, Text, String, ForeignKey
 from typing import Optional
 from uuid import UUID, uuid4
 
 
 class ScoreCompatibilite(SQLModel, table=True):
     """
-    Table SCORE_COMPATIBILITE — SLR Léway
+    Table SCORE_COMPATIBILITE — SLR ORIAB
 
-    Relation : RECOMMANDATION → SCORE_COMPATIBILITE  (1 — 1..*)
-    Un rapport contient au moins un score par filière évaluée.
-
-    Weighted Score = décomposé en 3 composantes :
-        score_riasec_match  → 60% — compatibilité profil RIASEC bachelier / profil idéal filière
-        score_marche        → 25% — taux d'insertion + salaire médian à 3 ans
-        score_ia            → 15% — tendance_ia du secteur (automatisabilité)
-
-    justification_ia : texte généré par le LLM en français naturel (géré par le binôme)
+    Weighted Score = 3 composantes :
+        score_riasec_match  → 60%
+        score_marche        → 25%
+        score_ia            → 15%
     """
     __tablename__ = "score_compatibilite"
 
@@ -25,7 +20,6 @@ class ScoreCompatibilite(SQLModel, table=True):
         primary_key=True,
     )
 
-    # ─── Clés étrangères ─────────────────────────────────────────────────────
     id_recommandation: UUID = Field(
         sa_column=Column(
             "id_recommandation",
@@ -41,13 +35,10 @@ class ScoreCompatibilite(SQLModel, table=True):
         )
     )
 
-    # ─── Weighted Score global ────────────────────────────────────────────────
     score_weighted: Optional[float] = Field(
         default=None,
         sa_column=Column(Float, nullable=True),
     )
-
-    # ─── Décomposition du score (60 / 25 / 15 %) ─────────────────────────────
     score_riasec_match: Optional[float] = Field(
         default=None,
         sa_column=Column(Float, nullable=True),
@@ -60,14 +51,16 @@ class ScoreCompatibilite(SQLModel, table=True):
         default=None,
         sa_column=Column(Float, nullable=True),
     )
-
-    # Rang dans le Top 5 (1 = meilleure recommandation)
     classement: Optional[int] = Field(
         default=None,
         sa_column=Column(Integer, nullable=True),
     )
-
-    # Texte LLM — généré par le moteur d'inférence (binôme)
+    # Raison d'élimination si Veto Factor déclenché
+    motif_veto: Optional[str] = Field(
+        default=None,
+        sa_column=Column(String(255), nullable=True),
+    )
+    # Texte généré par le LLM — géré par le binôme
     justification_ia: Optional[str] = Field(
         default=None,
         sa_column=Column(Text, nullable=True),
@@ -85,4 +78,5 @@ class ScoreCompatibiliteRead(SQLModel):
     score_marche: Optional[float]
     score_ia: Optional[float]
     classement: Optional[int]
+    motif_veto: Optional[str]
     justification_ia: Optional[str]

@@ -5,6 +5,8 @@ from app.core.security import hash_password, verify_password, create_access_toke
 from app.core.dependencies import get_current_bachelier
 from app.models.bachelier import Bachelier, BachelierCreate, BachelierRead
 from pydantic import BaseModel
+import random
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter()
 
@@ -88,3 +90,90 @@ def login(data: LoginRequest, session: Session = Depends(get_session)):
 )
 def me(current_bachelier: Bachelier = Depends(get_current_bachelier)):
     return BachelierRead.model_validate(current_bachelier)
+
+@router.post(
+    "/send-otp",
+    summary="Génère et envoie un code OTP au bachelier",
+)
+def send_otp(email: str, session: Session = Depends(get_session)):
+    bachelier = session.exec(
+        select(Bachelier).where(Bachelier.email == email)
+    ).first()
+    if not bachelier:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Aucun compte associé à cet email",
+        )
+    if bachelier.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ce compte est déjà vérifié",
+        )
+
+    # Génération du code à 6 chiffres
+    code = str(random.randint(100000, 999999))
+    expire = datetime.now(timezone.utc) + timedelta(minutes=10)
+
+    bachelier.otp_code = code
+    bachelier.otp_expires_at = expire
+    session.add(bachelier)
+    session.commit()
+
+    # TODO : remplacer par un vrai envoi SMS/email en production
+    print(f"[OTP MOCK] Code pour {email} : {code} (expire dans 10 min)")
+
+    return {"message": "Code OTP envoyé", "expires_in_minutes": 10}
+
+
+@router.post(
+    "/verify-otp",
+    response_model=TokenResponse,
+    summary="Vérifie le code OTP et active le compte",
+)
+def verify_otp(
+    email: str,
+    code: str,
+    session: Session = Depends(get_session),
+):
+    bachelier = session.exec(
+        select(Bachelier).where(Bachelier.email == email)
+    ).first()
+    if not bachelier:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Aucun compte associé à cet email",
+        )
+    if bachelier.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ce compte est déjà vérifié",
+        )
+    if bachelier.otp_code != code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Code OTP incorrect",
+        )
+
+    now = datetime.now(timezone.utc)
+    if bachelier.otp_expires_at is None or bachelier.otp_expires_at < now:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Code OTP expiré — demandez un nouveau code",
+        )
+
+    # Activation du compte
+    bachelier.is_verified = True
+    bachelier.otp_code = None
+    bachelier.otp_expires_at = None
+    session.add(bachelier)
+    session.commit()
+    session.refresh(bachelier)
+
+    token = create_access_token(
+        subject=str(bachelier.id_bachelier),
+        role="bachelier",
+    )
+    return TokenResponse(
+        access_token=token,
+        bachelier=BachelierRead.model_validate(bachelier),
+    )
