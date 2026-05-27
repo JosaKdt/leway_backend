@@ -8,6 +8,7 @@ from app.models.formation import Formation, FormationCreate, FormationRead
 from app.models.recommandation import Recommandation, RecommandationRead
 from app.models.score_compatibilite import ScoreCompatibilite, ScoreCompatibiliteRead
 from app.models.favoris import Favoris, FavorisCreate, FavorisRead
+from app.models.representant_universite import RepresentantUniversite
 
 __all__ = [
     # Tables

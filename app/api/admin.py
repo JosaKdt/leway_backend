@@ -25,38 +25,35 @@ def require_admin(current_user=Depends(get_current_user)):
 
 # ─── Métriques ────────────────────────────────────────────────────────────────
 
-@router.get(
-    "/metriques",
-    summary="Tableau de bord — métriques algorithmiques",
-)
+@router.get("/metriques", summary="Tableau de bord — métriques algorithmiques")
 def get_metriques(
     session: Session = Depends(get_session),
     admin=Depends(require_admin),
 ):
-    """
-    Bloc 5 — Back-office administratif (mémoire II.2.1)
-    Supervise les performances algorithmiques.
-    """
-    nb_filieres = len(session.exec(select(Filiere)).all())
-    nb_universites = len(session.exec(select(Universite)).all())
+    from app.models.bachelier import Bachelier
+    from app.models.profil_psychometrique import ProfilPsychometrique
+
+    nb_bacheliers     = len(session.exec(select(Bachelier)).all())
+    nb_filieres       = len(session.exec(select(Filiere)).all())
+    nb_universites    = len(session.exec(select(Universite)).all())
     nb_recommandations = len(session.exec(select(Recommandation)).all())
-    nb_generees = len(session.exec(
-        select(Recommandation).where(Recommandation.statut == "generee")
-    ).all())
-    nb_consultees = len(session.exec(
-        select(Recommandation).where(Recommandation.statut == "consultee")
-    ).all())
+    nb_profils        = len(session.exec(select(ProfilPsychometrique)).all())
+    nb_generees       = len(session.exec(select(Recommandation).where(Recommandation.statut == "generee")).all())
+    nb_consultees     = len(session.exec(select(Recommandation).where(Recommandation.statut == "consultee")).all())
+
+    taux_completion = round(nb_profils / nb_bacheliers, 3) if nb_bacheliers > 0 else 0.0
 
     return {
-        "filieres": nb_filieres,
-        "universites": nb_universites,
+        "bacheliers":      nb_bacheliers,
+        "filieres":        nb_filieres,
+        "universites":     nb_universites,
+        "taux_completion": taux_completion,
         "recommandations": {
-            "total": nb_recommandations,
-            "generees": nb_generees,
+            "total":     nb_recommandations,
+            "generees":  nb_generees,
             "consultees": nb_consultees,
         },
     }
-
 
 # ─── Gestion des filières ─────────────────────────────────────────────────────
 

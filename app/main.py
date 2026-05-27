@@ -34,7 +34,7 @@ app.add_middleware(
 )
 
 # ─── Routers ──────────────────────────────────────────────────────────────────
-from app.api import auth, filieres, favoris, bacheliers, universites, formations, profil, recommandations, admin 
+from app.api import auth, filieres, favoris, bacheliers, universites, formations, profil, recommandations, admin, representants
 
 app.include_router(auth.router,        prefix="/api/auth",       tags=["Auth"])
 app.include_router(filieres.router,    prefix="/api/filieres",   tags=["Filières"])
@@ -45,6 +45,7 @@ app.include_router(formations.router,   prefix="/api/formations",  tags=["Format
 app.include_router(profil.router,       prefix="/api/profil",      tags=["Profil"])
 app.include_router(recommandations.router,   prefix="/api/recommandations",  tags=["Recommandations"])
 app.include_router(admin.router,           prefix="/api/admin",           tags=["Admin"])
+app.include_router(representants.router, prefix="/api/representant", tags=["Representant"])
 
 @app.get("/", tags=["Health"])
 def root():
