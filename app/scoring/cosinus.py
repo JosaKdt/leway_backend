@@ -1,53 +1,122 @@
 """
-LÉWAY — scoring/cosinus.py
-Distance cosinus bachelier ↔ filière + Weighted Score 60/25/15.
+ORIAB — scoring/cosinus.py
+Similarité cosinus + Weighted Score 60/25/15.
+
+Source des données : table filiere (PostgreSQL via SQLModel).
+Le cosinus compare le vecteur RIASEC du bachelier avec le profil_riasec_dominant
+de chaque filière stocké en JSONB dans la DB.
+
+Score marché = 0.6 × taux_insertion/100 + 0.4 × (1 - indice_saturation)
+Score IA     = f(tendance_ia) : 0→1.0 | 1→0.75 | 2→0.40 | 3→0.10
+WS           = 60% × cosinus + 25% × score_marché + 15% × score_IA  → [0, 100]
 """
-import json
 import numpy as np
-from pathlib import Path
-
-DATA_DIR = Path(__file__).parent.parent / "data"
-
-
-def charger_filieres() -> dict:
-    with open(DATA_DIR / "filieres.json", encoding="utf-8") as f:
-        return json.load(f)
+from sqlmodel import Session, select
+from app.models.filiere import Filiere
 
 
-def distance_cosinus(v_bach: dict[str, float], v_fil: dict[str, float]) -> float:
-    dims = ["R", "I", "A", "S", "E", "C"]
-    vb = np.array([v_bach[d] for d in dims], dtype=float)
-    vf = np.array([v_fil[d] for d in dims], dtype=float)
+# ─── Constantes ───────────────────────────────────────────────────────────────
+DIMS = ["R", "I", "A", "S", "E", "C"]
+
+IA_SCORE_MAP = {0: 1.00, 1: 0.75, 2: 0.40, 3: 0.10}
+
+
+# ─── Fonctions de calcul ──────────────────────────────────────────────────────
+
+def distance_cosinus(v_bach: dict[str, float], v_filiere: dict[str, float]) -> float:
+    """
+    Similarité cosinus entre le profil RIASEC du bachelier
+    et le profil idéal de la filière.
+    Retourne une valeur ∈ [0.0, 1.0].
+    """
+    vb = np.array([float(v_bach.get(d, 0)) for d in DIMS])
+    vf = np.array([float(v_filiere.get(d, 0)) for d in DIMS])
     nb, nf = np.linalg.norm(vb), np.linalg.norm(vf)
     if nb == 0 or nf == 0:
         return 0.0
     return float(np.dot(vb, vf) / (nb * nf))
 
 
-def weighted_score(sim_riasec: float, score_marche: float, score_ia: float) -> float:
-    """WS = 60% cosinus + 25% marché + 15% IA → score 0-100."""
-    return round((0.60 * sim_riasec + 0.25 * score_marche + 0.15 * score_ia) * 100, 1)
+def score_marche_normalise(filiere: Filiere) -> float:
+    """
+    Score marché normalisé [0, 1].
+    Combine taux d'insertion (60%) et indice de saturation inversé (40%).
+    """
+    t = float(filiere.taux_insertion or 0) / 100.0
+    s = float(filiere.indice_saturation or 0.5)
+    return round(0.6 * t + 0.4 * (1.0 - s), 4)
 
 
-def top5_filieres(scores_bach: dict[str, float]) -> list[dict]:
-    """Calcule et retourne les 5 meilleures filières triées par WS décroissant."""
-    filieres_db = charger_filieres()
+def score_ia_normalise(filiere: Filiere) -> float:
+    """
+    Score IA normalisé [0, 1] depuis tendance_ia (0-3).
+    0 = secteur en forte croissance → excellent (1.0)
+    3 = secteur fortement automatisable → faible (0.10)
+    """
+    return IA_SCORE_MAP.get(filiere.tendance_ia or 1, 0.75)
+
+
+def weighted_score(sim_riasec: float, s_marche: float, s_ia: float) -> float:
+    """
+    Weighted Score = 60% cosinus + 25% marché + 15% IA → score ∈ [0, 100].
+    Formule conforme au mémoire (Tableau de pondération).
+    """
+    return round((0.60 * sim_riasec + 0.25 * s_marche + 0.15 * s_ia) * 100, 1)
+
+
+# ─── Fonction principale ──────────────────────────────────────────────────────
+
+def top5_filieres(scores_bach: dict[str, float], session: Session) -> list[dict]:
+    """
+    Calcule le Weighted Score de TOUTES les filières actives en DB
+    et retourne les 5 meilleures triées par score décroissant.
+
+    C'est cette fonction qui est utilisée par /api/recommandations/generer.
+    Elle lit les données directement depuis PostgreSQL (pas depuis filieres.json).
+
+    Args:
+        scores_bach: {'R': 72.4, 'I': 85.1, ...} — sortie de calculer_scores_riasec()
+        session:     Session SQLModel active (injectée par FastAPI)
+
+    Returns:
+        Liste de 5 dicts enrichis avec tous les champs utiles pour le rapport LLM.
+    """
+    filieres = session.exec(select(Filiere)).all()
     resultats = []
-    for nom, data in filieres_db.items():
-        sim = distance_cosinus(scores_bach, data)
-        ws = weighted_score(sim, data["score_marche"], data["score_ia"])
+
+    for filiere in filieres:
+        profil_ideal = filiere.profil_riasec_dominant or {}
+        if not profil_ideal:
+            continue  # Filière sans profil RIASEC — on l'ignore
+
+        sim    = distance_cosinus(scores_bach, profil_ideal)
+        s_m    = score_marche_normalise(filiere)
+        s_ia   = score_ia_normalise(filiere)
+        ws     = weighted_score(sim, s_m, s_ia)
+
+        # Veto Factors spécifiques à la filière (stockés en JSONB dans la DB)
+        vf = filiere.veto_factors or {}
+
         resultats.append({
-            "filiere": nom,
-            "weighted_score": ws,
-            "sim_riasec": round(sim, 4),
-            "score_marche": data["score_marche"],
-            "score_ia": data["score_ia"],
-            "duree_ans": data["duree_ans"],
-            "budget_min_fcfa": data["budget_min_fcfa"],
-            "bac_recommande": data["bac_recommande"],
-            "salaire_median_fcfa": data.get("salaire_median_fcfa"),
-            "taux_insertion_pct": data.get("taux_insertion_pct"),
-            "indice_saturation": data.get("indice_saturation"),
+            "id_filiere":            str(filiere.id_filiere),
+            "nom":                   filiere.nom,
+            "domaine":               filiere.domaine,
+            "weighted_score":        ws,
+            "sim_riasec":            round(sim, 4),
+            "score_marche":          s_m,
+            "score_ia":              s_ia,
+            # Données marché — utilisées par le prompt LLM ET les Veto Factors
+            "duree_theorique":       filiere.duree_theorique,
+            "salaire_median_p50":    filiere.salaire_median_p50,
+            "taux_insertion":        filiere.taux_insertion,
+            "indice_saturation":     filiere.indice_saturation,
+            "tendance_ia":           filiere.tendance_ia,
+            "tendance_curricula_marche": filiere.tendance_curricula_marche,
+            # Veto Factors de la filière depuis DB
+            "budget_min_fcfa":       vf.get("budget_min_fcfa", 0),
+            "serie_bac_requise":     vf.get("serie_bac_requise", []),
+            "mobilite_requise":      vf.get("mobilite_requise", False),
         })
+
     resultats.sort(key=lambda x: x["weighted_score"], reverse=True)
     return resultats[:5]
