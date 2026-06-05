@@ -66,13 +66,15 @@ def weighted_score(sim_riasec: float, s_marche: float, s_ia: float) -> float:
 
 # ─── Fonction principale ──────────────────────────────────────────────────────
 
-def top5_filieres(scores_bach: dict[str, float], session: Session) -> list[dict]:
+def toutes_filieres_scorees(scores_bach: dict[str, float], session: Session) -> list[dict]:
     """
     Calcule le Weighted Score de TOUTES les filières actives en DB
-    et retourne les 5 meilleures triées par score décroissant.
+    et retourne TOUTES les filières triées par score décroissant.
+    Le veto sera appliqué après par appliquer_veto().
 
-    C'est cette fonction qui est utilisée par /api/recommandations/generer.
-    Elle lit les données directement depuis PostgreSQL (pas depuis filieres.json).
+    Utilisée par /api/recommandations/generer.
+    Retourne TOUTES les filières pour que appliquer_veto() puisse
+    sélectionner le Top 3 parmi les filières valides.
 
     Args:
         scores_bach: {'R': 72.4, 'I': 85.1, ...} — sortie de calculer_scores_riasec()
@@ -119,4 +121,4 @@ def top5_filieres(scores_bach: dict[str, float], session: Session) -> list[dict]
         })
 
     resultats.sort(key=lambda x: x["weighted_score"], reverse=True)
-    return resultats[:5]
+    return resultats  # toutes — veto appliqué en aval

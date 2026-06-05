@@ -19,7 +19,7 @@ from app.models.recommandation import Recommandation, RecommandationRead
 from app.models.score_compatibilite import ScoreCompatibilite
 from app.models.profil_psychometrique import ProfilPsychometrique
 from app.models.bachelier import Bachelier
-from app.scoring.cosinus import top5_filieres          # lit depuis DB PostgreSQL
+from app.scoring.cosinus import toutes_filieres_scorees          # lit depuis DB PostgreSQL
 from app.scoring.veto import appliquer_veto
 from app.scoring.prompt_builder import construire_prompt_llm, construire_prompt_mistral
 
@@ -75,7 +75,7 @@ async def generer_recommandation(
     serie_bac = getattr(bachelier, "serie_bac", None) if bachelier else None
 
     # ── 2. Top 5 filières (Weighted Score depuis DB) ──────────────────────────
-    top5_raw = top5_filieres(scores_riasec, session)
+    top5_raw = toutes_filieres_scorees(scores_riasec, session)
 
     # ── 3. Veto Factors ───────────────────────────────────────────────────────
     veto = appliquer_veto(
@@ -88,13 +88,29 @@ async def generer_recommandation(
     top3_valides   = veto["top5_valides"][:3]  # On garde le Top 3 final
     top3_eliminees = veto["eliminees"]
 
-    # Si tout éliminé, on utilise le Top 3 brut (avec avertissement)
-    top3_pour_llm = top3_valides if top3_valides else top5_raw[:3]
-    avertissement_veto = (
-        "Toutes les filières ont été filtrées par les Veto Factors. "
-        "Révise tes contraintes (budget, durée, mobilité)."
-        if not top3_valides else None
-    )
+    # Déterminer le type de veto pour le message d'avertissement
+    veto_serie_bac = any(
+        "série" in " ".join(e["raisons_veto"]).lower()
+        for e in top3_eliminees
+    ) if top3_eliminees else False
+
+    if top3_valides:
+        top3_pour_llm = top3_valides
+        avertissement_veto = None
+    elif veto_serie_bac:
+        # Veto série bac = irrévocable, pas de fallback trompeur
+        top3_pour_llm = []
+        avertissement_veto = (
+            "Aucune filière compatible avec ta série bac. "
+            "Les filières recommandées exigent des séries différentes."
+        )
+    else:
+        # Veto budget/durée = révisable, on affiche quand même le Top 3 brut
+        top3_pour_llm = top5_raw[:3]
+        avertissement_veto = (
+            "Toutes les filières ont été filtrées par tes contraintes "
+            "(budget, durée, mobilité). Révise-les si possible."
+        )
 
     # ── 4. Rapport LLM avec contexte RAG ─────────────────────────────────────
     mode_llm = os.getenv("LLM_MODE", "local")
@@ -121,6 +137,14 @@ async def generer_recommandation(
             ),
             "top3_justifiees": [],
             "mode": f"erreur_llm: {str(e)[:80]}",
+        }
+
+    # Si aucune filière valide, le rapport LLM ne génère rien d'utile
+    if not top3_valides and not top3_pour_llm:
+        rapport_llm = {
+            "rapport_synthese": avertissement_veto or "Aucune filière recommandée.",
+            "top3_justifiees": [],
+            "mode": "veto_total",
         }
 
     # ── 5. Persistance DB ─────────────────────────────────────────────────────
