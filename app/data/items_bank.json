@@ -1,0 +1,479 @@
+[
+  {
+    "id": "B_R_01",
+    "section": "B",
+    "texte": "J'aime travailler avec mes mains — réparer des appareils, construire des objets, entretenir des machines.",
+    "dimension": "R",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": "discrimination élevée, comportement observable"
+  },
+  {
+    "id": "B_R_02",
+    "section": "B",
+    "texte": "Je préfère travailler sur le terrain ou en plein air plutôt qu'être assis dans un bureau toute la journée.",
+    "dimension": "R",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_R_03",
+    "section": "C",
+    "texte": "Je veux exercer un métier technique où je résous des problèmes concrets liés à la construction, aux machines ou à l'énergie.",
+    "dimension": "R",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_R_04",
+    "section": "B",
+    "texte": "Quand quelque chose est cassé chez moi, j'essaie de le réparer moi-même avant de demander de l'aide.",
+    "dimension": "R",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": "comportement auto-rapporté, contexte béninois"
+  },
+  {
+    "id": "B_R_05",
+    "section": "B",
+    "texte": "Les activités manuelles ou techniques comme l'électricité, la mécanique, la menuiserie ou l'agriculture m'attirent.",
+    "dimension": "R",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_R_06",
+    "section": "E",
+    "texte": "Je préfère apprendre en pratiquant directement plutôt qu'en écoutant de longues explications théoriques.",
+    "dimension": "R",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": "item léger, discrimination faible"
+  },
+  {
+    "id": "B_R_07",
+    "section": "E",
+    "texte": "Je me sens plus à l'aise devant un outil, une machine ou un terrain qu'assis à faire des calculs abstraits.",
+    "dimension": "R",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_R_08",
+    "section": "B",
+    "texte": "L'idée de construire, installer ou entretenir une infrastructure physique (bâtiment, réseau, équipement) m'enthousiasme.",
+    "dimension": "R",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": "orienté vers filières BTP/Génie Civil/Énergie"
+  },
+  {
+    "id": "B_I_01",
+    "section": "B",
+    "texte": "J'aime lire, faire des recherches et analyser des problèmes complexes par moi-même.",
+    "dimension": "I",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_I_02",
+    "section": "E",
+    "texte": "Face à un problème difficile, je continue à chercher une solution sans me décourager facilement.",
+    "dimension": "I",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_I_03",
+    "section": "E",
+    "texte": "Je suis capable de travailler seul(e) pendant de longues heures sur un sujet qui m'intéresse.",
+    "dimension": "I",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_I_04",
+    "section": "C",
+    "texte": "Je souhaite travailler dans un domaine de recherche, d'innovation ou de nouvelles technologies.",
+    "dimension": "I",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_I_05",
+    "section": "B",
+    "texte": "J'aime comprendre pourquoi les choses fonctionnent de telle façon — pas seulement comment les utiliser.",
+    "dimension": "I",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": "curiosité épistémique, très discriminant pour I"
+  },
+  {
+    "id": "B_I_06",
+    "section": "B",
+    "texte": "Je lis volontiers des articles ou des livres sur des sujets scientifiques, technologiques ou philosophiques.",
+    "dimension": "I",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_I_07",
+    "section": "B",
+    "texte": "J'aime résoudre des problèmes de logique, de mathématiques ou d'analyse de données.",
+    "dimension": "I",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_I_08",
+    "section": "B",
+    "texte": "Quand j'apprends quelque chose de nouveau, je veux comprendre les mécanismes profonds, pas juste la surface.",
+    "dimension": "I",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": "profondeur cognitive, adapté au contexte universitaire"
+  },
+  {
+    "id": "B_A_01",
+    "section": "B",
+    "texte": "Je trouve du plaisir à créer — dessiner, écrire, jouer de la musique, photographier, exprimer des idées originales.",
+    "dimension": "A",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_A_02",
+    "section": "C",
+    "texte": "Je me vois dans un métier créatif — arts, communication, design, écriture, publicité, cinéma.",
+    "dimension": "A",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_A_03",
+    "section": "B",
+    "texte": "Je préfère les situations ouvertes où je peux inventer mes propres solutions plutôt que suivre des procédures fixes.",
+    "dimension": "A",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": "opposition au trait C, fort pouvoir discriminant"
+  },
+  {
+    "id": "B_A_04",
+    "section": "B",
+    "texte": "J'aime exprimer ce que je ressens à travers des mots, des images, de la musique ou d'autres formes artistiques.",
+    "dimension": "A",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_A_05",
+    "section": "B",
+    "texte": "La routine répétitive me pèse — j'ai besoin de variété, de nouveauté et de liberté dans mon travail.",
+    "dimension": "A",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": "item indirect, discrimine A vs C/R"
+  },
+  {
+    "id": "B_A_06",
+    "section": "B",
+    "texte": "J'aime imaginer des concepts originaux ou des approches inédites, même si elles ne sont pas conventionnelles.",
+    "dimension": "A",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_A_07",
+    "section": "E",
+    "texte": "Je me sens vivant(e) et motivé(e) quand je crée quelque chose d'unique, même si c'est imparfait.",
+    "dimension": "A",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_A_08",
+    "section": "B",
+    "texte": "Les environnements très stricts et très formels me démotivent — j'ai besoin d'une certaine liberté pour m'épanouir.",
+    "dimension": "A",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": "contexte béninois : certaines filières très formelles"
+  },
+  {
+    "id": "B_S_01",
+    "section": "B",
+    "texte": "Je préfère aider les autres — enseigner, soigner, conseiller — plutôt que de travailler seul sur des tâches techniques.",
+    "dimension": "S",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_S_02",
+    "section": "C",
+    "texte": "Mon objectif professionnel est de contribuer au bien-être d'une communauté — en santé, en éducation ou dans le social.",
+    "dimension": "S",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_S_03",
+    "section": "B",
+    "texte": "Je me sens épanoui(e) quand je vois que mon aide a eu un impact positif concret sur la vie de quelqu'un.",
+    "dimension": "S",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": "item clé, très discriminant pour S"
+  },
+  {
+    "id": "B_S_04",
+    "section": "B",
+    "texte": "J'aime écouter les gens, comprendre leurs difficultés, et chercher comment les aider concrètement.",
+    "dimension": "S",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_S_05",
+    "section": "B",
+    "texte": "Je préfère un travail où je suis en contact permanent avec des personnes plutôt qu'isolé(e) devant un écran.",
+    "dimension": "S",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_S_06",
+    "section": "C",
+    "texte": "L'idée de travailler comme enseignant(e), soignant(e), éducateur/trice ou conseiller/ère me plaît vraiment.",
+    "dimension": "S",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": "item direct de carrière sociale"
+  },
+  {
+    "id": "B_S_07",
+    "section": "E",
+    "texte": "Je ressens une grande satisfaction quand j'explique quelque chose et que mon interlocuteur comprend enfin.",
+    "dimension": "S",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": "plaisir pédagogique, orienté enseignement"
+  },
+  {
+    "id": "B_S_08",
+    "section": "B",
+    "texte": "Je m'implique naturellement pour aider à résoudre les conflits ou les difficultés des personnes autour de moi.",
+    "dimension": "S",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_E_01",
+    "section": "B",
+    "texte": "J'aime prendre la parole devant un groupe, convaincre les autres et mener des projets.",
+    "dimension": "E",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_E_02",
+    "section": "C",
+    "texte": "Dans 5 ans, je me vois dans un poste où je dirige une équipe, gère une entreprise ou coordonne des projets.",
+    "dimension": "E",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_E_03",
+    "section": "E",
+    "texte": "Je gère bien le stress lorsque j'ai plusieurs responsabilités en même temps.",
+    "dimension": "E",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_E_04",
+    "section": "E",
+    "texte": "Je préfère que quelqu'un d'autre prenne les décisions importantes à ma place — cela me stresse moins.",
+    "dimension": "E",
+    "w_i": 1.0,
+    "inverse": true,
+    "note": "inversé, détecter les profils peu E"
+  },
+  {
+    "id": "B_E_05",
+    "section": "B",
+    "texte": "J'aime prendre des risques calculés pour atteindre un objectif ambitieux.",
+    "dimension": "E",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": "goût du risque, très discriminant pour E"
+  },
+  {
+    "id": "B_E_06",
+    "section": "B",
+    "texte": "Quand je fais partie d'un groupe, je prends naturellement le rôle de coordinateur ou de meneur.",
+    "dimension": "E",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_E_07",
+    "section": "B",
+    "texte": "Je suis à l'aise pour négocier, vendre des idées ou persuader quelqu'un de changer d'avis.",
+    "dimension": "E",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": "compétence de persuasion, orienté commerce/management"
+  },
+  {
+    "id": "B_E_08",
+    "section": "C",
+    "texte": "Créer ma propre entreprise ou lancer un projet personnel est quelque chose qui m'attire vraiment.",
+    "dimension": "E",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": "orientation entrepreneuriale, contexte ANPE/entrepreneuriat Bénin"
+  },
+  {
+    "id": "B_C_01",
+    "section": "B",
+    "texte": "Je préfère travailler avec des chiffres et des données plutôt qu'avec des personnes ou des idées abstraites.",
+    "dimension": "C",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_C_02",
+    "section": "B",
+    "texte": "Je préfère les règles claires et les procédures bien définies à l'improvisation.",
+    "dimension": "C",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_C_03",
+    "section": "B",
+    "texte": "J'aime classer, organiser et structurer les informations de façon méthodique et précise.",
+    "dimension": "C",
+    "w_i": 1.4,
+    "inverse": false,
+    "note": "comportement organisationnel, très discriminant pour C"
+  },
+  {
+    "id": "B_C_04",
+    "section": "B",
+    "texte": "Je préfère un travail prévisible où je sais exactement ce qui est attendu de moi chaque jour.",
+    "dimension": "C",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_C_05",
+    "section": "B",
+    "texte": "La précision et l'exactitude sont très importantes pour moi — je déteste faire des erreurs.",
+    "dimension": "C",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_C_06",
+    "section": "B",
+    "texte": "J'aime suivre un plan établi et m'y tenir plutôt que d'improviser ou de changer de direction.",
+    "dimension": "C",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": ""
+  },
+  {
+    "id": "B_C_07",
+    "section": "E",
+    "texte": "Je suis souvent celui/celle qui vérifie que les détails sont corrects dans un travail de groupe.",
+    "dimension": "C",
+    "w_i": 1.2,
+    "inverse": false,
+    "note": "rôle de vérificateur, comportement observable"
+  },
+  {
+    "id": "B_C_08",
+    "section": "B",
+    "texte": "Je trouve satisfaisant de tenir des registres, gérer des fichiers ou remplir des formulaires avec soin.",
+    "dimension": "C",
+    "w_i": 1.0,
+    "inverse": false,
+    "note": "item direct très C, mais peut sembler peu glamour — bon pour discriminer"
+  },
+  {
+    "id": "Q18",
+    "section": "D",
+    "texte": "Quel est le budget annuel maximum que ta famille peut consacrer à tes études universitaires ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "note": "tranche 1-4, utilisé pour veto budget"
+  },
+  {
+    "id": "Q19",
+    "section": "D",
+    "texte": "Es-tu prêt(e) à quitter ta ville actuelle pour étudier dans une autre ville du Bénin si nécessaire ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "note": "mobilité nationale, veto mobilité"
+  },
+  {
+    "id": "Q20",
+    "section": "D",
+    "texte": "Envisages-tu de partir étudier à l'étranger si une formation le nécessite ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "note": "mobilité internationale"
+  },
+  {
+    "id": "Q21",
+    "section": "D",
+    "texte": "En combien d'années maximum souhaites-tu obtenir ton premier diplôme universitaire ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "note": "horizon temporel, veto durée"
+  },
+  {
+    "id": "Q22",
+    "section": "D",
+    "texte": "As-tu des contraintes particulières (familiales, médicales, géographiques) qui limitent tes choix d'orientation ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "note": "contrainte générale, facteur qualitatif"
+  }
+]
