@@ -2,11 +2,12 @@
   {
     "id": "B_R_01",
     "section": "B",
-    "texte": "J'aime travailler avec mes mains — réparer des appareils, construire des objets, entretenir des machines.",
+    "texte": "J'aime travailler avec mes mains — réparer des appareils, construire des objets ou entretenir des machines.",
     "dimension": "R",
     "w_i": 1.4,
     "inverse": false,
-    "note": "discrimination élevée, comportement observable"
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_R_02",
@@ -15,7 +16,8 @@
     "dimension": "R",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "activite",
+    "source": "SDS"
   },
   {
     "id": "B_R_03",
@@ -24,7 +26,8 @@
     "dimension": "R",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "ONET"
   },
   {
     "id": "B_R_04",
@@ -33,43 +36,88 @@
     "dimension": "R",
     "w_i": 1.2,
     "inverse": false,
-    "note": "comportement auto-rapporté, contexte béninois"
+    "facette": "comportement",
+    "source": "adapte"
   },
   {
     "id": "B_R_05",
     "section": "B",
-    "texte": "Les activités manuelles ou techniques comme l'électricité, la mécanique, la menuiserie ou l'agriculture m'attirent.",
+    "texte": "Les activités manuelles ou techniques comme l'électricité, la mécanique, la menuiserie ou l'agriculture m'attirent vraiment.",
     "dimension": "R",
     "w_i": 1.4,
     "inverse": false,
-    "note": ""
+    "facette": "activite",
+    "source": "IPIP"
   },
   {
     "id": "B_R_06",
     "section": "E",
-    "texte": "Je préfère apprendre en pratiquant directement plutôt qu'en écoutant de longues explications théoriques.",
+    "texte": "Je me sens plus à l'aise devant un outil ou une machine qu'assis à lire ou à faire des calculs abstraits.",
     "dimension": "R",
     "w_i": 1.0,
     "inverse": false,
-    "note": "item léger, discrimination faible"
+    "facette": "valeur",
+    "source": "adapte"
   },
   {
     "id": "B_R_07",
-    "section": "E",
-    "texte": "Je me sens plus à l'aise devant un outil, une machine ou un terrain qu'assis à faire des calculs abstraits.",
+    "section": "B",
+    "texte": "J'aime l'idée de fabriquer quelque chose de mes propres mains — un meuble, un appareil, une installation.",
     "dimension": "R",
-    "w_i": 1.0,
+    "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_R_08",
     "section": "B",
-    "texte": "L'idée de construire, installer ou entretenir une infrastructure physique (bâtiment, réseau, équipement) m'enthousiasme.",
+    "texte": "L'idée de construire, installer ou entretenir une infrastructure physique (bâtiment, réseau électrique, équipement) m'enthousiasme.",
     "dimension": "R",
     "w_i": 1.2,
     "inverse": false,
-    "note": "orienté vers filières BTP/Génie Civil/Énergie"
+    "facette": "activite",
+    "source": "adapte"
+  },
+  {
+    "id": "B_R_09",
+    "section": "B",
+    "texte": "Je considère que je suis habile avec mes mains et que j'apprends vite les gestes techniques.",
+    "dimension": "R",
+    "w_i": 1.2,
+    "inverse": false,
+    "facette": "competence",
+    "source": "SDS"
+  },
+  {
+    "id": "B_R_10",
+    "section": "E",
+    "texte": "Je préfère apprendre en faisant directement plutôt qu'en écoutant de longues explications théoriques.",
+    "dimension": "R",
+    "w_i": 1.0,
+    "inverse": false,
+    "facette": "valeur",
+    "source": "adapte"
+  },
+  {
+    "id": "B_R_11",
+    "section": "B",
+    "texte": "Les activités manuelles ou mécaniques ne m'attirent pas particulièrement — je préfère les tâches conceptuelles.",
+    "dimension": "R",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "activite",
+    "source": "SDS"
+  },
+  {
+    "id": "B_R_12",
+    "section": "B",
+    "texte": "Je ne me considère pas comme quelqu'un de très habile avec les outils ou le matériel technique.",
+    "dimension": "R",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "competence",
+    "source": "IPIP"
   },
   {
     "id": "B_I_01",
@@ -78,7 +126,8 @@
     "dimension": "I",
     "w_i": 1.4,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_I_02",
@@ -87,16 +136,18 @@
     "dimension": "I",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "competence",
+    "source": "IPIP"
   },
   {
     "id": "B_I_03",
     "section": "E",
-    "texte": "Je suis capable de travailler seul(e) pendant de longues heures sur un sujet qui m'intéresse.",
+    "texte": "Je suis capable de travailler seul(e) pendant de longues heures sur un sujet intellectuellement stimulant.",
     "dimension": "I",
     "w_i": 1.0,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "adapte"
   },
   {
     "id": "B_I_04",
@@ -105,7 +156,8 @@
     "dimension": "I",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "ONET"
   },
   {
     "id": "B_I_05",
@@ -114,16 +166,18 @@
     "dimension": "I",
     "w_i": 1.4,
     "inverse": false,
-    "note": "curiosité épistémique, très discriminant pour I"
+    "facette": "activite",
+    "source": "IPIP"
   },
   {
     "id": "B_I_06",
     "section": "B",
-    "texte": "Je lis volontiers des articles ou des livres sur des sujets scientifiques, technologiques ou philosophiques.",
+    "texte": "Je lis volontiers des livres ou articles sur des sujets scientifiques, technologiques ou philosophiques.",
     "dimension": "I",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_I_07",
@@ -132,34 +186,78 @@
     "dimension": "I",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "activite",
+    "source": "IPIP"
   },
   {
     "id": "B_I_08",
     "section": "B",
-    "texte": "Quand j'apprends quelque chose de nouveau, je veux comprendre les mécanismes profonds, pas juste la surface.",
+    "texte": "Quand j'apprends quelque chose, je veux en comprendre les fondements en profondeur, pas juste la surface.",
     "dimension": "I",
     "w_i": 1.0,
     "inverse": false,
-    "note": "profondeur cognitive, adapté au contexte universitaire"
+    "facette": "valeur",
+    "source": "adapte"
+  },
+  {
+    "id": "B_I_09",
+    "section": "B",
+    "texte": "J'observe les phénomènes autour de moi et je me pose des questions sur leur fonctionnement.",
+    "dimension": "I",
+    "w_i": 1.2,
+    "inverse": false,
+    "facette": "comportement",
+    "source": "ONET"
+  },
+  {
+    "id": "B_I_10",
+    "section": "B",
+    "texte": "Je pense que j'ai une bonne capacité à apprendre et à assimiler des concepts nouveaux.",
+    "dimension": "I",
+    "w_i": 1.0,
+    "inverse": false,
+    "facette": "competence",
+    "source": "adapte"
+  },
+  {
+    "id": "B_I_11",
+    "section": "C",
+    "texte": "Les matières purement théoriques ou abstraites (mathématiques fondamentales, philosophie) m'ennuient rapidement.",
+    "dimension": "I",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "activite",
+    "source": "SDS"
+  },
+  {
+    "id": "B_I_12",
+    "section": "E",
+    "texte": "Je ne suis pas particulièrement à l'aise avec les problèmes intellectuels très complexes.",
+    "dimension": "I",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "competence",
+    "source": "IPIP"
   },
   {
     "id": "B_A_01",
     "section": "B",
-    "texte": "Je trouve du plaisir à créer — dessiner, écrire, jouer de la musique, photographier, exprimer des idées originales.",
+    "texte": "Je trouve du plaisir à créer — dessiner, écrire, composer, photographier, ou exprimer des idées originales.",
     "dimension": "A",
     "w_i": 1.4,
     "inverse": false,
-    "note": ""
+    "facette": "activite",
+    "source": "SDS"
   },
   {
     "id": "B_A_02",
     "section": "C",
-    "texte": "Je me vois dans un métier créatif — arts, communication, design, écriture, publicité, cinéma.",
+    "texte": "Je me vois dans un métier créatif — arts, communication, design, écriture, cinéma ou publicité.",
     "dimension": "A",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "ONET"
   },
   {
     "id": "B_A_03",
@@ -168,7 +266,8 @@
     "dimension": "A",
     "w_i": 1.4,
     "inverse": false,
-    "note": "opposition au trait C, fort pouvoir discriminant"
+    "facette": "valeur",
+    "source": "IPIP"
   },
   {
     "id": "B_A_04",
@@ -177,43 +276,88 @@
     "dimension": "A",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_A_05",
     "section": "B",
-    "texte": "La routine répétitive me pèse — j'ai besoin de variété, de nouveauté et de liberté dans mon travail.",
+    "texte": "La routine répétitive me pèse — j'ai besoin de variété, de nouveauté et d'un espace de liberté dans mon travail.",
     "dimension": "A",
     "w_i": 1.0,
     "inverse": false,
-    "note": "item indirect, discrimine A vs C/R"
+    "facette": "valeur",
+    "source": "adapte"
   },
   {
     "id": "B_A_06",
     "section": "B",
-    "texte": "J'aime imaginer des concepts originaux ou des approches inédites, même si elles ne sont pas conventionnelles.",
+    "texte": "J'aime imaginer des concepts originaux, même si personne d'autre n'y avait pensé avant moi.",
     "dimension": "A",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "IPIP"
   },
   {
     "id": "B_A_07",
     "section": "E",
-    "texte": "Je me sens vivant(e) et motivé(e) quand je crée quelque chose d'unique, même si c'est imparfait.",
+    "texte": "Je me sens vivant(e) et motivé(e) quand je crée quelque chose d'unique, même s'il est imparfait.",
     "dimension": "A",
     "w_i": 1.0,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "adapte"
   },
   {
     "id": "B_A_08",
     "section": "B",
-    "texte": "Les environnements très stricts et très formels me démotivent — j'ai besoin d'une certaine liberté pour m'épanouir.",
+    "texte": "Un travail très rigide, avec des règles strictes et peu de place pour l'initiative, me démotiverait.",
     "dimension": "A",
     "w_i": 1.0,
     "inverse": false,
-    "note": "contexte béninois : certaines filières très formelles"
+    "facette": "valeur",
+    "source": "adapte"
+  },
+  {
+    "id": "B_A_09",
+    "section": "B",
+    "texte": "J'ai une sensibilité particulière pour l'esthétique — la beauté d'un texte, d'une image, d'un objet ou d'une musique.",
+    "dimension": "A",
+    "w_i": 1.2,
+    "inverse": false,
+    "facette": "comportement",
+    "source": "ONET"
+  },
+  {
+    "id": "B_A_10",
+    "section": "E",
+    "texte": "Je préfère les défis ouverts (trouver des idées nouvelles) aux défis fermés (résoudre un problème avec une seule bonne réponse).",
+    "dimension": "A",
+    "w_i": 1.2,
+    "inverse": false,
+    "facette": "activite",
+    "source": "IPIP"
+  },
+  {
+    "id": "B_A_11",
+    "section": "B",
+    "texte": "Je ne me considère pas particulièrement créatif(ve) ou original(e) — j'exécute bien les instructions données.",
+    "dimension": "A",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "competence",
+    "source": "adapte"
+  },
+  {
+    "id": "B_A_12",
+    "section": "B",
+    "texte": "Je préfère les tâches bien définies avec des instructions claires plutôt que les projets créatifs ouverts.",
+    "dimension": "A",
+    "w_i": 1.2,
+    "inverse": true,
+    "facette": "valeur",
+    "source": "IPIP"
   },
   {
     "id": "B_S_01",
@@ -222,7 +366,8 @@
     "dimension": "S",
     "w_i": 1.4,
     "inverse": false,
-    "note": ""
+    "facette": "activite",
+    "source": "SDS"
   },
   {
     "id": "B_S_02",
@@ -231,34 +376,38 @@
     "dimension": "S",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "ONET"
   },
   {
     "id": "B_S_03",
     "section": "B",
-    "texte": "Je me sens épanoui(e) quand je vois que mon aide a eu un impact positif concret sur la vie de quelqu'un.",
+    "texte": "Je me sens épanoui(e) quand mon aide a eu un impact positif concret sur la vie de quelqu'un.",
     "dimension": "S",
     "w_i": 1.4,
     "inverse": false,
-    "note": "item clé, très discriminant pour S"
+    "facette": "comportement",
+    "source": "IPIP"
   },
   {
     "id": "B_S_04",
     "section": "B",
-    "texte": "J'aime écouter les gens, comprendre leurs difficultés, et chercher comment les aider concrètement.",
+    "texte": "J'aime écouter les gens, comprendre leurs difficultés, et trouver comment les aider concrètement.",
     "dimension": "S",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_S_05",
     "section": "B",
-    "texte": "Je préfère un travail où je suis en contact permanent avec des personnes plutôt qu'isolé(e) devant un écran.",
+    "texte": "Je préfère un travail en contact permanent avec des personnes plutôt qu'isolé(e) devant un écran ou une machine.",
     "dimension": "S",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "adapte"
   },
   {
     "id": "B_S_06",
@@ -267,16 +416,18 @@
     "dimension": "S",
     "w_i": 1.2,
     "inverse": false,
-    "note": "item direct de carrière sociale"
+    "facette": "activite",
+    "source": "ONET"
   },
   {
     "id": "B_S_07",
     "section": "E",
-    "texte": "Je ressens une grande satisfaction quand j'explique quelque chose et que mon interlocuteur comprend enfin.",
+    "texte": "Je ressens une vraie satisfaction quand j'explique quelque chose et que la personne en face comprend enfin.",
     "dimension": "S",
     "w_i": 1.0,
     "inverse": false,
-    "note": "plaisir pédagogique, orienté enseignement"
+    "facette": "comportement",
+    "source": "adapte"
   },
   {
     "id": "B_S_08",
@@ -285,7 +436,48 @@
     "dimension": "S",
     "w_i": 1.0,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "IPIP"
+  },
+  {
+    "id": "B_S_09",
+    "section": "B",
+    "texte": "Les activités de sensibilisation communautaire, de formation ou d'animation me semblent utiles et valorisantes.",
+    "dimension": "S",
+    "w_i": 1.2,
+    "inverse": false,
+    "facette": "activite",
+    "source": "adapte"
+  },
+  {
+    "id": "B_S_10",
+    "section": "E",
+    "texte": "Les gens me disent souvent que je suis bon(ne) pour écouter et comprendre les autres.",
+    "dimension": "S",
+    "w_i": 1.0,
+    "inverse": false,
+    "facette": "competence",
+    "source": "adapte"
+  },
+  {
+    "id": "B_S_11",
+    "section": "B",
+    "texte": "Aider ou enseigner les autres en permanence me fatigue — j'ai besoin de temps seul pour me ressourcer.",
+    "dimension": "S",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "valeur",
+    "source": "SDS"
+  },
+  {
+    "id": "B_S_12",
+    "section": "E",
+    "texte": "Je préfère travailler seul sur un problème technique plutôt qu'en interaction constante avec des personnes.",
+    "dimension": "S",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "activite",
+    "source": "adapte"
   },
   {
     "id": "B_E_01",
@@ -294,7 +486,8 @@
     "dimension": "E",
     "w_i": 1.4,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_E_02",
@@ -303,16 +496,18 @@
     "dimension": "E",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "ONET"
   },
   {
     "id": "B_E_03",
     "section": "E",
-    "texte": "Je gère bien le stress lorsque j'ai plusieurs responsabilités en même temps.",
+    "texte": "Je gère bien la pression et le stress lorsque j'ai plusieurs responsabilités en même temps.",
     "dimension": "E",
     "w_i": 1.0,
     "inverse": false,
-    "note": ""
+    "facette": "competence",
+    "source": "IPIP"
   },
   {
     "id": "B_E_04",
@@ -321,7 +516,8 @@
     "dimension": "E",
     "w_i": 1.0,
     "inverse": true,
-    "note": "inversé, détecter les profils peu E"
+    "facette": "valeur",
+    "source": "SDS"
   },
   {
     "id": "B_E_05",
@@ -330,7 +526,8 @@
     "dimension": "E",
     "w_i": 1.4,
     "inverse": false,
-    "note": "goût du risque, très discriminant pour E"
+    "facette": "activite",
+    "source": "IPIP"
   },
   {
     "id": "B_E_06",
@@ -339,7 +536,8 @@
     "dimension": "E",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "SDS"
   },
   {
     "id": "B_E_07",
@@ -348,7 +546,8 @@
     "dimension": "E",
     "w_i": 1.2,
     "inverse": false,
-    "note": "compétence de persuasion, orienté commerce/management"
+    "facette": "competence",
+    "source": "ONET"
   },
   {
     "id": "B_E_08",
@@ -357,7 +556,48 @@
     "dimension": "E",
     "w_i": 1.2,
     "inverse": false,
-    "note": "orientation entrepreneuriale, contexte ANPE/entrepreneuriat Bénin"
+    "facette": "valeur",
+    "source": "adapte"
+  },
+  {
+    "id": "B_E_09",
+    "section": "B",
+    "texte": "Je prends naturellement des initiatives, même quand personne ne me l'a demandé.",
+    "dimension": "E",
+    "w_i": 1.2,
+    "inverse": false,
+    "facette": "comportement",
+    "source": "IPIP"
+  },
+  {
+    "id": "B_E_10",
+    "section": "E",
+    "texte": "Diriger et influencer les autres me semble naturel — j'ai du leadership.",
+    "dimension": "E",
+    "w_i": 1.0,
+    "inverse": false,
+    "facette": "competence",
+    "source": "adapte"
+  },
+  {
+    "id": "B_E_11",
+    "section": "B",
+    "texte": "L'idée de participer à des négociations commerciales ou à des débats pour défendre une position m'enthousiasme.",
+    "dimension": "E",
+    "w_i": 1.2,
+    "inverse": false,
+    "facette": "activite",
+    "source": "ONET"
+  },
+  {
+    "id": "B_E_12",
+    "section": "E",
+    "texte": "Je me sens bloqué(e) et peu efficace quand on me confie trop de responsabilités en même temps.",
+    "dimension": "E",
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "competence",
+    "source": "adapte"
   },
   {
     "id": "B_C_01",
@@ -366,7 +606,8 @@
     "dimension": "C",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "activite",
+    "source": "SDS"
   },
   {
     "id": "B_C_02",
@@ -375,7 +616,8 @@
     "dimension": "C",
     "w_i": 1.0,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "SDS"
   },
   {
     "id": "B_C_03",
@@ -384,7 +626,8 @@
     "dimension": "C",
     "w_i": 1.4,
     "inverse": false,
-    "note": "comportement organisationnel, très discriminant pour C"
+    "facette": "comportement",
+    "source": "IPIP"
   },
   {
     "id": "B_C_04",
@@ -393,7 +636,8 @@
     "dimension": "C",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "ONET"
   },
   {
     "id": "B_C_05",
@@ -402,16 +646,18 @@
     "dimension": "C",
     "w_i": 1.2,
     "inverse": false,
-    "note": ""
+    "facette": "comportement",
+    "source": "IPIP"
   },
   {
     "id": "B_C_06",
     "section": "B",
-    "texte": "J'aime suivre un plan établi et m'y tenir plutôt que d'improviser ou de changer de direction.",
+    "texte": "J'aime suivre un plan établi et m'y tenir, plutôt que de changer de direction en cours de route.",
     "dimension": "C",
     "w_i": 1.0,
     "inverse": false,
-    "note": ""
+    "facette": "valeur",
+    "source": "adapte"
   },
   {
     "id": "B_C_07",
@@ -420,7 +666,8 @@
     "dimension": "C",
     "w_i": 1.2,
     "inverse": false,
-    "note": "rôle de vérificateur, comportement observable"
+    "facette": "competence",
+    "source": "adapte"
   },
   {
     "id": "B_C_08",
@@ -429,315 +676,97 @@
     "dimension": "C",
     "w_i": 1.0,
     "inverse": false,
-    "note": "item direct très C, mais peut sembler peu glamour — bon pour discriminer"
-  },
-  {
-    "id": "Q18",
-    "section": "D",
-    "texte": "Quel est le budget annuel maximum que ta famille peut consacrer à tes études universitaires ?",
-    "dimension": "VETO",
-    "w_i": null,
-    "inverse": false,
-    "note": "tranche 1-4, utilisé pour veto budget"
-  },
-  {
-    "id": "Q19",
-    "section": "D",
-    "texte": "Es-tu prêt(e) à quitter ta ville actuelle pour étudier dans une autre ville du Bénin si nécessaire ?",
-    "dimension": "VETO",
-    "w_i": null,
-    "inverse": false,
-    "note": "mobilité nationale, veto mobilité"
-  },
-  {
-    "id": "Q20",
-    "section": "D",
-    "texte": "Envisages-tu de partir étudier à l'étranger si une formation le nécessite ?",
-    "dimension": "VETO",
-    "w_i": null,
-    "inverse": false,
-    "note": "mobilité internationale"
-  },
-  {
-    "id": "Q21",
-    "section": "D",
-    "texte": "En combien d'années maximum souhaites-tu obtenir ton premier diplôme universitaire ?",
-    "dimension": "VETO",
-    "w_i": null,
-    "inverse": false,
-    "note": "horizon temporel, veto durée"
-  },
-  {
-    "id": "Q22",
-    "section": "D",
-    "texte": "As-tu des contraintes particulières (familiales, médicales, géographiques) qui limitent tes choix d'orientation ?",
-    "dimension": "VETO",
-    "w_i": null,
-    "inverse": false,
-    "note": "contrainte générale, facteur qualitatif"
-  },
-  {
-    "id": "B_R_09",
-    "section": "B",
-    "texte": "Quand j'observe un professionnel faire un travail technique (soudure, maçonnerie, électricité), j'ai envie d'apprendre à faire pareil.",
-    "dimension": "R",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Holland 1997 p.22 — Realistic: 'prefer to work with things rather than people'",
-    "construct_mesure": "Attirance comportementale pour les métiers manuels et techniques (RIC)",
-    "note": "source:Holland 1997 p.22 — Realistic: 'prefer to work with things rather than people'"
-  },
-  {
-    "id": "B_R_10",
-    "section": "B",
-    "texte": "Je pense que travailler avec ses mains pour produire quelque chose de concret est aussi noble qu'un travail de bureau.",
-    "dimension": "R",
-    "w_i": 1.0,
-    "inverse": false,
-    "source_theorique": "Holland 1997 p.25 — Realistic: values self-sufficiency and practicality",
-    "construct_mesure": "Valeur attribuée au travail manuel — dimension axiologique du trait R",
-    "note": "source:Holland 1997 p.25 — Realistic: values self-sufficiency and practicality"
-  },
-  {
-    "id": "B_R_11",
-    "section": "E",
-    "texte": "Je préfère un métier où je vois directement le résultat concret de mon travail (bâtiment construit, machine réparée, récolte produite).",
-    "dimension": "R",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Armstrong & Rounds 2008 — Mechanical/Nature Interest Scale",
-    "construct_mesure": "Satisfaction par la concrétude des résultats — spécifique au contexte béninois (BTP, agriculture)",
-    "note": "source:Armstrong & Rounds 2008 — Mechanical/Nature Interest Scale"
-  },
-  {
-    "id": "B_R_12",
-    "section": "B",
-    "texte": "L'idée d'exercer un métier physiquement actif — agriculteur, technicien, maçon, électricien — ne me dérange pas du tout.",
-    "dimension": "R",
-    "w_i": 1.0,
-    "inverse": false,
-    "source_theorique": "Holland 1997; Liao et al. 2008 — Outdoor/Hands-on interest",
-    "construct_mesure": "Tolérance et attractivité des métiers physiques — item de discrimination R vs S dans contexte africain",
-    "note": "source:Holland 1997; Liao et al. 2008 — Outdoor/Hands-on interest"
-  },
-  {
-    "id": "B_I_09",
-    "section": "B",
-    "texte": "Quand j'entends parler d'une découverte scientifique ou d'une nouvelle technologie, je veux immédiatement comprendre comment ça fonctionne.",
-    "dimension": "I",
-    "w_i": 1.4,
-    "inverse": false,
-    "source_theorique": "Holland 1997 p.33 — Investigative: 'curious, methodical, rational'",
-    "construct_mesure": "Curiosité intellectuelle spontanée — marqueur fort du trait I selon Holland",
-    "note": "source:Holland 1997 p.33 — Investigative: 'curious, methodical, rational'"
-  },
-  {
-    "id": "B_I_10",
-    "section": "B",
-    "texte": "Je préfère les questions qui n'ont pas de réponse évidente — c'est plus stimulant de chercher que d'appliquer une recette.",
-    "dimension": "I",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Liao et al. 2008 — Science Interest Scale item 14",
-    "construct_mesure": "Tolérance à l'ambiguïté et goût de la recherche — différencie I de C",
-    "note": "source:Liao et al. 2008 — Science Interest Scale item 14"
-  },
-  {
-    "id": "B_I_11",
-    "section": "E",
-    "texte": "Je me sens peu à l'aise si on me demande d'agir sans comprendre les raisons profondes de ce que je fais.",
-    "dimension": "I",
-    "w_i": 1.0,
-    "inverse": false,
-    "source_theorique": "Holland 1997 — Investigative values: understanding over action",
-    "construct_mesure": "Besoin de compréhension avant action — item indirect du trait I",
-    "note": "source:Holland 1997 — Investigative values: understanding over action"
-  },
-  {
-    "id": "B_I_12",
-    "section": "B",
-    "texte": "Les livres ou documentaires qui expliquent le fonctionnement du corps humain, de l'univers ou de la technologie me passionnent.",
-    "dimension": "I",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Armstrong & Rounds 2008 — Science/Math/Medical Interests",
-    "construct_mesure": "Intérêts investigatifs dans 3 domaines clés liés aux filières béninoises (Médecine, Informatique, Sciences)",
-    "note": "source:Armstrong & Rounds 2008 — Science/Math/Medical Interests"
-  },
-  {
-    "id": "B_A_09",
-    "section": "B",
-    "texte": "Je fais souvent des efforts pour que les choses autour de moi soient belles — décoration, tenue, présentation de travaux.",
-    "dimension": "A",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Holland 1997 p.42 — Artistic: aesthetic sensitivity",
-    "construct_mesure": "Sensibilité esthétique — composante affective du trait A selon Holland",
-    "note": "source:Holland 1997 p.42 — Artistic: aesthetic sensitivity"
-  },
-  {
-    "id": "B_A_10",
-    "section": "C",
-    "texte": "Dans un travail de groupe, je suis souvent celui/celle qui soigne la présentation finale — mise en forme, visuels, style.",
-    "dimension": "A",
-    "w_i": 1.0,
-    "inverse": false,
-    "source_theorique": "Liao et al. 2008 — Arts/Performance Scale",
-    "construct_mesure": "Comportement artistique observable en situation collective",
-    "note": "source:Liao et al. 2008 — Arts/Performance Scale"
-  },
-  {
-    "id": "B_A_11",
-    "section": "B",
-    "texte": "L'idée d'écrire un roman, de composer une chanson, de réaliser un film ou de concevoir une campagne publicitaire m'enthousiasme.",
-    "dimension": "A",
-    "w_i": 1.4,
-    "inverse": false,
-    "source_theorique": "Holland 1997 — Artistic occupational examples; SDS Activity Scale",
-    "construct_mesure": "Aspiration à des activités créatives — item fort de discrimination A vs C/R",
-    "note": "source:Holland 1997 — Artistic occupational examples; SDS Activity Scale"
-  },
-  {
-    "id": "B_A_12",
-    "section": "B",
-    "texte": "Je trouve les règles et les contraintes trop rigides frustrantes — j'ai besoin de pouvoir improviser et m'adapter librement.",
-    "dimension": "A",
-    "w_i": 1.0,
-    "inverse": false,
-    "source_theorique": "Holland 1997 p.44 — Artistic: 'dislikes conformity and structure'",
-    "construct_mesure": "Aversion à la structure rigide — différencie A de C, prudence car culturellement sensible au Bénin",
-    "note": "source:Holland 1997 p.44 — Artistic: 'dislikes conformity and structure'"
-  },
-  {
-    "id": "B_S_09",
-    "section": "B",
-    "texte": "Quand je vois quelqu'un en difficulté, mon premier réflexe est de me demander comment je peux l'aider.",
-    "dimension": "S",
-    "w_i": 1.4,
-    "inverse": false,
-    "source_theorique": "Holland 1997 p.52 — Social: 'concerned with welfare of others'",
-    "construct_mesure": "Orientation prosociale spontanée — marqueur comportemental fort du trait S",
-    "note": "source:Holland 1997 p.52 — Social: 'concerned with welfare of others'"
-  },
-  {
-    "id": "B_S_10",
-    "section": "C",
-    "texte": "Je veux exercer un métier où je contribue directement au développement de la jeunesse ou à la santé de ma communauté au Bénin.",
-    "dimension": "S",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Holland 1997 + OCCDE/BIT 2020 — Social interest in community development",
-    "construct_mesure": "Aspiration de contribution sociale — contextualisé pour le Bénin (développement, jeunesse, santé communautaire)",
-    "note": "source:Holland 1997 + OCCDE/BIT 2020 — Social interest in community development"
-  },
-  {
-    "id": "B_S_11",
-    "section": "B",
-    "texte": "J'aime bien travailler en équipe — la dynamique de groupe, l'entraide et la coopération me motivent plus que le travail solitaire.",
-    "dimension": "S",
-    "w_i": 1.0,
-    "inverse": false,
-    "source_theorique": "Liao et al. 2008 — Teaching/Social Service Scale",
-    "construct_mesure": "Préférence pour le travail coopératif — différencie S de I/R qui préfèrent le travail solo",
-    "note": "source:Liao et al. 2008 — Teaching/Social Service Scale"
-  },
-  {
-    "id": "B_S_12",
-    "section": "B",
-    "texte": "Je m'intéresse à la psychologie, aux relations humaines et aux raisons qui poussent les gens à agir comme ils agissent.",
-    "dimension": "S",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Holland 1997 — Social + adjacent Investigative behaviors",
-    "construct_mesure": "Curiosité interpersonnelle — orientation S-I, pertinent pour filières Psychologie/Sciences de l'Éducation",
-    "note": "source:Holland 1997 — Social + adjacent Investigative behaviors"
-  },
-  {
-    "id": "B_E_09",
-    "section": "B",
-    "texte": "J'aime convaincre les gens de rejoindre un projet ou d'adopter une idée — trouver les bons arguments me plaît.",
-    "dimension": "E",
-    "w_i": 1.4,
-    "inverse": false,
-    "source_theorique": "Holland 1997 p.62 — Enterprising: 'persuasive, dominating, sociable'",
-    "construct_mesure": "Compétence persuasive — marqueur fort du trait E selon Holland",
-    "note": "source:Holland 1997 p.62 — Enterprising: 'persuasive, dominating, sociable'"
-  },
-  {
-    "id": "B_E_10",
-    "section": "B",
-    "texte": "Je suis à l'aise pour parler d'argent, de prix, de budgets — les négociations financières ne m'intimidident pas.",
-    "dimension": "E",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Armstrong & Rounds 2008 — Sales/Management Interest Scale",
-    "construct_mesure": "Aisance avec les transactions économiques — pertinent pour filières Commerce/Finance au Bénin",
-    "note": "source:Armstrong & Rounds 2008 — Sales/Management Interest Scale"
-  },
-  {
-    "id": "B_E_11",
-    "section": "C",
-    "texte": "Je pense que le fait d'avoir du pouvoir ou de l'influence dans mon domaine est une réussite importante à atteindre.",
-    "dimension": "E",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Holland 1997 — Enterprising values: status, power, economic achievement",
-    "construct_mesure": "Valeur accordée au statut et à l'influence — dimension axiologique du trait E",
-    "note": "source:Holland 1997 — Enterprising values: status, power, economic achievement"
-  },
-  {
-    "id": "B_E_12",
-    "section": "B",
-    "texte": "Face à un groupe qui hésite ou qui manque de direction, je prends naturellement les devants pour proposer un plan d'action.",
-    "dimension": "E",
-    "w_i": 1.4,
-    "inverse": false,
-    "source_theorique": "Holland 1997; Liao et al. 2008 — Leadership Interest Scale",
-    "construct_mesure": "Leadership spontané en situation ambiguë — item comportemental très discriminant pour E",
-    "note": "source:Holland 1997; Liao et al. 2008 — Leadership Interest Scale"
+    "facette": "activite",
+    "source": "SDS"
   },
   {
     "id": "B_C_09",
     "section": "B",
-    "texte": "J'aime les travaux qui demandent de la méthode et de la rigueur — remplir un tableau, vérifier des comptes, archiver des données.",
+    "texte": "Travailler dans l'administration, la comptabilité, la gestion ou les archives me semblerait utile et valorisant.",
     "dimension": "C",
-    "w_i": 1.4,
+    "w_i": 1.2,
     "inverse": false,
-    "source_theorique": "Holland 1997 p.72 — Conventional: 'orderly, systematic, precise'",
-    "construct_mesure": "Goût pour les tâches systématiques et documentées — marqueur fort du trait C",
-    "note": "source:Holland 1997 p.72 — Conventional: 'orderly, systematic, precise'"
+    "facette": "activite",
+    "source": "ONET"
   },
   {
     "id": "B_C_10",
-    "section": "B",
-    "texte": "Je me sens mal à l'aise quand les règles ne sont pas claires ou quand le cadre de travail est trop flou.",
+    "section": "E",
+    "texte": "Je préfère un environnement de travail calme et ordonné à un environnement imprévisible et dynamique.",
     "dimension": "C",
-    "w_i": 1.2,
+    "w_i": 1.0,
     "inverse": false,
-    "source_theorique": "Holland 1997 — Conventional: 'prefers structured environment'",
-    "construct_mesure": "Besoin de structure et clarté — différencie C de A et E",
-    "note": "source:Holland 1997 — Conventional: 'prefers structured environment'"
+    "facette": "valeur",
+    "source": "adapte"
   },
   {
     "id": "B_C_11",
-    "section": "E",
-    "texte": "Je préfère une tâche bien définie que je peux exécuter avec précision plutôt qu'un projet ouvert avec beaucoup d'inconnues.",
+    "section": "B",
+    "texte": "Je peux travailler efficacement même dans un environnement peu structuré ou désorganisé.",
     "dimension": "C",
-    "w_i": 1.2,
-    "inverse": false,
-    "source_theorique": "Liao et al. 2008 — Office Practices Scale item 8",
-    "construct_mesure": "Préférence pour la clarté et la précision sur la créativité — item de discrimination C vs A",
-    "note": "source:Liao et al. 2008 — Office Practices Scale item 8"
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "valeur",
+    "source": "adapte"
   },
   {
     "id": "B_C_12",
     "section": "B",
-    "texte": "Je trouverais satisfaisant de travailler dans la gestion administrative, la comptabilité, la finance ou la banque.",
+    "texte": "Les règles et procédures rigides me semblent souvent inutiles — je préfère m'adapter selon le contexte.",
     "dimension": "C",
-    "w_i": 1.2,
+    "w_i": 1.0,
+    "inverse": true,
+    "facette": "valeur",
+    "source": "adapte"
+  },
+  {
+    "id": "Q18",
+    "section": "D",
+    "texte": "Quel est le budget annuel maximum que ta famille peut consacrer à tes études universitaires (frais + logement + transport) ?",
+    "dimension": "VETO",
+    "w_i": null,
     "inverse": false,
-    "source_theorique": "Holland 1997 — Conventional occupational examples; SDS Occupations Scale",
-    "construct_mesure": "Aspiration professionnelle conventionnelle — item d'orientation directe vers filières C, contextualisé Bénin (banque, microfinance)",
-    "note": "source:Holland 1997 — Conventional occupational examples; SDS Occupations Scale"
+    "facette": "budget",
+    "source": "ORIAB"
+  },
+  {
+    "id": "Q19",
+    "section": "D",
+    "texte": "Es-tu prêt(e) à quitter ta ville actuelle pour étudier dans une autre ville du Bénin si la filière l'exige ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "facette": "mobilite",
+    "source": "ORIAB"
+  },
+  {
+    "id": "Q20",
+    "section": "D",
+    "texte": "Envisages-tu de partir étudier à l'étranger (CEDEAO, Europe, etc.) si une formation le nécessite ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "facette": "mobilite",
+    "source": "ORIAB"
+  },
+  {
+    "id": "Q21",
+    "section": "D",
+    "texte": "En combien d'années maximum souhaites-tu obtenir ton premier diplôme universitaire (Licence ou équivalent) ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "facette": "horizon",
+    "source": "ORIAB"
+  },
+  {
+    "id": "Q22",
+    "section": "D",
+    "texte": "As-tu des contraintes particulières (familiales, de santé, financières) qui limitent significativement tes choix d'orientation ?",
+    "dimension": "VETO",
+    "w_i": null,
+    "inverse": false,
+    "facette": "contrainte",
+    "source": "ORIAB"
   }
 ]
