@@ -22,7 +22,7 @@ from pathlib import Path
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 DIMS = ["R", "I", "A", "S", "E", "C"]
-ITEMS_PER_DIM = 4   # nombre d'items tirés par dimension à chaque session
+ITEMS_PER_DIM = 5   # nombre d'items tirés par dimension à chaque session
 
 
 def charger_banque() -> list[dict]:
