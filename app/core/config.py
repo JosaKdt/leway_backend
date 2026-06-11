@@ -24,11 +24,18 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"
     APP_VERSION: str = "1.0.0"
 
+    
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": True,
         "extra": "ignore"
     }
+
+    RESEND_API_KEY: str = ""
+    FROM_EMAIL: str = "onboarding@resend.dev"
+    GMAIL_USER: str = ""
+    GMAIL_APP_PASSWORD: str = ""
 
 
 settings = Settings()

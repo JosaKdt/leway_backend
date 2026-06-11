@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import create_db_and_tables
 import app.models  # noqa : force la découverte de tous les modèles par SQLModel
+from app.api import notifications
 
 
 @asynccontextmanager
@@ -46,6 +47,7 @@ app.include_router(profil.router,       prefix="/api/profil",      tags=["Profil
 app.include_router(recommandations.router,   prefix="/api/recommandations",  tags=["Recommandations"])
 app.include_router(admin.router,           prefix="/api/admin",           tags=["Admin"])
 app.include_router(representants.router, prefix="/api/representant", tags=["Representant"])
+app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 
 @app.get("/", tags=["Health"])
 def root():
