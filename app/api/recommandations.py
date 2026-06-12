@@ -19,6 +19,7 @@ from app.models.recommandation import Recommandation, RecommandationRead
 from app.models.score_compatibilite import ScoreCompatibilite
 from app.models.profil_psychometrique import ProfilPsychometrique
 from app.models.bachelier import Bachelier
+from app.models.filiere import Filiere
 from app.scoring.cosinus import toutes_filieres_scorees          # lit depuis DB PostgreSQL
 from app.scoring.veto import appliquer_veto
 from app.scoring.prompt_builder import construire_prompt_llm, construire_prompt_mistral
@@ -215,21 +216,70 @@ def mes_recommandations(
 
 @router.get(
     "/{id_recommandation}",
-    response_model=RecommandationRead,
-    summary="Détail d'une recommandation",
+    summary="Détail d'une recommandation — enrichi avec scores et filières",
 )
 def get_recommandation(
     id_recommandation: UUID,
     session: Session = Depends(get_session),
     current_user=Depends(get_current_user),
 ):
+    """
+    Retourne la recommandation enrichie pour le RapportPage :
+    - scores[]    : filières recommandées (classement non nul), avec données filière
+    - eliminees[] : filières exclues par Veto Factors, avec motif
+    """
     rec = session.get(Recommandation, id_recommandation)
     if not rec:
         raise HTTPException(404, "Recommandation introuvable")
     if str(rec.id_bachelier) != current_user["sub"]:
         raise HTTPException(403, "Accès interdit")
+
     # Marquer comme consultée
     if rec.statut == "generee":
         rec.statut = "consultee"
         session.add(rec); session.commit(); session.refresh(rec)
-    return rec
+
+    # Charger les scores liés + données filière
+    sc_rows = session.exec(
+        select(ScoreCompatibilite, Filiere)
+        .join(Filiere, Filiere.id_filiere == ScoreCompatibilite.id_filiere)
+        .where(ScoreCompatibilite.id_recommandation == rec.id_recommandation)
+    ).all()
+
+    scores, eliminees = [], []
+    for sc, fil in sc_rows:
+        if sc.classement is not None:
+            scores.append({
+                "classement":          sc.classement,
+                "nom":                 fil.nom,
+                "domaine":             fil.domaine,
+                "weighted_score":      sc.score_weighted,
+                "sim_riasec":          sc.score_riasec_match,
+                "score_marche":        sc.score_marche,
+                "score_ia":            sc.score_ia,
+                "duree_theorique":     fil.duree_theorique,
+                "salaire_median_p50":  fil.salaire_median_p50,
+                "taux_insertion":      fil.taux_insertion,
+                "indice_saturation":   fil.indice_saturation,
+                "tendance_ia":         fil.tendance_ia,
+                "justification_ia":    sc.justification_ia,
+            })
+        else:
+            eliminees.append({
+                "nom":            fil.nom,
+                "weighted_score": sc.score_weighted,
+                "motif_veto":     sc.motif_veto,
+            })
+
+    scores.sort(key=lambda x: x["classement"])
+
+    return {
+        "id_recommandation": rec.id_recommandation,
+        "id_bachelier":      rec.id_bachelier,
+        "date_generation":   rec.date_generation,
+        "version_algo":      rec.version_algo,
+        "score_max":         rec.score_max,
+        "statut":            rec.statut,
+        "scores":            scores,
+        "eliminees":         eliminees,
+    }
