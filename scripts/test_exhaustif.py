@@ -269,12 +269,12 @@ if det_d and det_d.get("scores"):
     erreurs_detail = []
     for s in det_d["scores"]:
         ws = s.get("weighted_score",0)
-        sim = s.get("sim_riasec",0)      # 0-100 (score_riasec_match en DB)
-        sm  = s.get("score_marche",0)    # 0-1
-        sia = s.get("score_ia",0)        # 0-1
+        sim = s.get("sim_riasec",0)      # 0-100 en DB
+        sm  = s.get("score_marche",0)    # 0-100 en DB (score_marche*100 au stockage)
+        sia = s.get("score_ia",0)        # 0-100 en DB (score_ia*100 au stockage)
         if sim and sm is not None and sia is not None:
-            # sim est déjà en 0-100, donc sim/100 le ramène en 0-1 pour la formule
-            ws_calc = (0.60*(sim/100.0) + 0.25*sm + 0.15*sia)*100
+            # Tout est en 0-100. WS = 0.60*sim + 0.25*marché + 0.15*IA (résultat 0-100)
+            ws_calc = 0.60*sim + 0.25*sm + 0.15*sia
             ecart = abs(ws_calc - ws)
             if ecart > 2.0:
                 erreurs_formule += 1
@@ -292,20 +292,22 @@ if det_d and det_d.get("scores"):
 # score_IA selon table (0→1.00, 1→0.75, 2→0.40, 3→0.10)
 section("§8 — Mapping score_IA (mémoire : 0→1.00|1→0.75|2→0.40|3→0.10)")
 if HAS_DB:
-    mapping = {0:1.00, 1:0.75, 2:0.40, 3:0.10}
+    # score_ia stocké en 0-100 (score_ia*100 au stockage), donc mapping ×100
+    mapping = {0:100.0, 1:75.0, 2:40.0, 3:10.0}
     rows = db_query("""SELECT f.tendance_ia, sc.score_ia, f.nom
                        FROM score_compatibilite sc 
                        JOIN filiere f ON f.id_filiere=sc.id_filiere
                        WHERE sc.score_ia IS NOT NULL AND f.tendance_ia IS NOT NULL
+                       AND sc.classement IS NOT NULL
                        LIMIT 50""")
     if rows and rows[0][0]!="DBERROR":
         erreurs=0; details=[]
         for tend, score_ia, nom in rows:
             tend_i = int(tend)
-            if tend_i in mapping and abs(mapping[tend_i]-float(score_ia))>0.05:
+            if tend_i in mapping and abs(mapping[tend_i]-float(score_ia))>2.0:
                 erreurs+=1
                 details.append(f"{nom[:20]}: tend={tend_i} score_ia={float(score_ia)} attendu={mapping[tend_i]}")
-        check(erreurs==0, "Mapping tendance_ia → score_ia conforme sur recos existantes",
+        check(erreurs==0, "Mapping tendance_ia → score_ia conforme (échelle 0-100)",
               f"{erreurs} écart(s) — {details[:2]}")
     else:
         skip("Pas de données score_ia à vérifier")
