@@ -69,3 +69,28 @@ def create_filiere(
     session.commit()
     session.refresh(filiere)
     return filiere
+
+# ─── POST /api/filieres/comparer ─────────────────────────────────────────────
+from pydantic import BaseModel as PydanticBase
+
+class ComparerRequest(PydanticBase):
+    noms: list[str]
+
+@router.post(
+    "/comparer",
+    response_model=list[FiliereRead],
+    summary="Comparer plusieurs filières par nom",
+)
+def comparer_filieres(
+    data: ComparerRequest,
+    session: Session = Depends(get_session),
+):
+    """Retourne les filières correspondant aux noms fournis (comparaison multicritères)."""
+    if not data.noms:
+        return []
+    filieres = session.exec(
+        select(Filiere).where(Filiere.nom.in_(data.noms))
+    ).all()
+    # Conserver l'ordre de la requête
+    ordre = {nom: i for i, nom in enumerate(data.noms)}
+    return sorted(filieres, key=lambda f: ordre.get(f.nom, 99))
