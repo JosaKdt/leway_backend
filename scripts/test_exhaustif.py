@@ -266,17 +266,21 @@ section("§7 — Formule Weighted Score (mémoire §289-292)")
 # WS = 0.60*RIASEC + 0.25*marché + 0.15*IA
 if det_d and det_d.get("scores"):
     erreurs_formule = 0
+    erreurs_detail = []
     for s in det_d["scores"]:
         ws = s.get("weighted_score",0)
-        sim = s.get("sim_riasec",0)      # 0-100
+        sim = s.get("sim_riasec",0)      # 0-100 (score_riasec_match en DB)
         sm  = s.get("score_marche",0)    # 0-1
         sia = s.get("score_ia",0)        # 0-1
         if sim and sm is not None and sia is not None:
-            ws_calc = (0.60*(sim/100) + 0.25*sm + 0.15*sia)*100
-            if abs(ws_calc - ws) > 2.0:
+            # sim est déjà en 0-100, donc sim/100 le ramène en 0-1 pour la formule
+            ws_calc = (0.60*(sim/100.0) + 0.25*sm + 0.15*sia)*100
+            ecart = abs(ws_calc - ws)
+            if ecart > 2.0:
                 erreurs_formule += 1
+                erreurs_detail.append(f"{s['nom'][:25]}: calc={round(ws_calc,1)} db={ws} (sim={sim},sm={sm},sia={sia})")
     check(erreurs_formule==0, "WS = 0.60×RIASEC + 0.25×marché + 0.15×IA vérifié sur Top 3",
-          f"{erreurs_formule} écart(s)>2%")
+          f"{erreurs_formule} écart(s)>2% — {erreurs_detail[:2]}")
     # Tri décroissant
     ws_list = [s["weighted_score"] for s in det_d["scores"]]
     check(ws_list==sorted(ws_list,reverse=True), "Filières triées par WS décroissant", str([round(w) for w in ws_list]))
@@ -289,16 +293,20 @@ if det_d and det_d.get("scores"):
 section("§8 — Mapping score_IA (mémoire : 0→1.00|1→0.75|2→0.40|3→0.10)")
 if HAS_DB:
     mapping = {0:1.00, 1:0.75, 2:0.40, 3:0.10}
-    rows = db_query("""SELECT DISTINCT f.tendance_ia, sc.score_ia 
+    rows = db_query("""SELECT f.tendance_ia, sc.score_ia, f.nom
                        FROM score_compatibilite sc 
                        JOIN filiere f ON f.id_filiere=sc.id_filiere
-                       WHERE sc.score_ia IS NOT NULL LIMIT 20""")
+                       WHERE sc.score_ia IS NOT NULL AND f.tendance_ia IS NOT NULL
+                       LIMIT 50""")
     if rows and rows[0][0]!="DBERROR":
-        erreurs=0
-        for tend, score_ia in rows:
-            if tend in mapping and abs(mapping[tend]-float(score_ia))>0.05:
+        erreurs=0; details=[]
+        for tend, score_ia, nom in rows:
+            tend_i = int(tend)
+            if tend_i in mapping and abs(mapping[tend_i]-float(score_ia))>0.05:
                 erreurs+=1
-        check(erreurs==0, "Mapping tendance_ia → score_ia conforme", f"{erreurs} écart(s)")
+                details.append(f"{nom[:20]}: tend={tend_i} score_ia={float(score_ia)} attendu={mapping[tend_i]}")
+        check(erreurs==0, "Mapping tendance_ia → score_ia conforme sur recos existantes",
+              f"{erreurs} écart(s) — {details[:2]}")
     else:
         skip("Pas de données score_ia à vérifier")
 else:
