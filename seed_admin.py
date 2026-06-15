@@ -10,7 +10,7 @@ from app.core.database import engine, create_db_and_tables
 from app.models.administrateur import Administrateur
 from app.core.security import hash_password
 
-EMAIL = "admin@oriab.bj"
+EMAIL    = "admin@oriab.bj"
 PASSWORD = "Admin2025!"
 
 def seed_admin():
@@ -26,13 +26,15 @@ def seed_admin():
             nom="ORIAB",
             prenom="Administrateur",
             email=EMAIL,
-            mot_de_passe=hash_password(PASSWORD),
+            mot_de_passe_hash=hash_password(PASSWORD),
         )
         s.add(admin)
         s.commit()
         s.refresh(admin)
-        print(f"✅ Admin créé : {EMAIL} / {PASSWORD}")
-        print(f"   ID : {admin.id_administrateur}")
+        print(f"✅ Admin créé")
+        print(f"   Email    : {EMAIL}")
+        print(f"   Password : {PASSWORD}")
+        print(f"   ID       : {admin.id_administrateur}")
 
 if __name__ == "__main__":
     seed_admin()
