@@ -53,7 +53,10 @@ def score_ia_normalise(filiere: Filiere) -> float:
     0 = secteur en forte croissance → excellent (1.0)
     3 = secteur fortement automatisable → faible (0.10)
     """
-    return IA_SCORE_MAP.get(filiere.tendance_ia or 1, 0.75)
+    # Ne pas utiliser "or 1" : tendance_ia=0 est valide (créateur IA → score 1.00)
+    # `0 or 1` vaut 1 en Python car 0 est falsy → bug. On teste None explicitement.
+    tendance = filiere.tendance_ia if filiere.tendance_ia is not None else 1
+    return IA_SCORE_MAP.get(tendance, 0.75)
 
 
 def weighted_score(sim_riasec: float, s_marche: float, s_ia: float) -> float:
