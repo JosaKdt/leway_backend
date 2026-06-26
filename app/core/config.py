@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     LLM_MODE: str = "cloud"
     ANTHROPIC_API_KEY: Optional[str] = None
     OLLAMA_BASE_URL: str = "http://localhost:11434"
+    GROQ_API_KEY: Optional[str] = None
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
 
     # ─── App ─────────────────────────────────────────────────────────
     APP_ENV: str = "development"

@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field
-from sqlalchemy import Column, Float, Integer, Text, String, ForeignKey
+from sqlalchemy import Column, Float, Integer, Text, String, ForeignKey, JSON
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -12,6 +12,9 @@ class ScoreCompatibilite(SQLModel, table=True):
         score_riasec_match  → 60%
         score_marche        → 25%
         score_ia            → 15%
+
+    points_forts / points_attention : listes générées par le LLM,
+    stockées en JSONB (ex: ["Bon taux d'insertion", "Salaire correct"])
     """
     __tablename__ = "score_compatibilite"
 
@@ -60,14 +63,23 @@ class ScoreCompatibilite(SQLModel, table=True):
         default=None,
         sa_column=Column(String(255), nullable=True),
     )
-    # Texte généré par le LLM — géré par le binôme
+    # Texte généré par le LLM
     justification_ia: Optional[str] = Field(
         default=None,
         sa_column=Column(Text, nullable=True),
     )
+    # Listes générées par le LLM — points forts / points d'attention
+    points_forts: Optional[list[str]] = Field(
+        default=None,
+        sa_column=Column(JSON, nullable=True),
+    )
+    points_attention: Optional[list[str]] = Field(
+        default=None,
+        sa_column=Column(JSON, nullable=True),
+    )
 
 
-# ─── Schémas Pydantic ─────────────────────────────────────────────────────────
+# ─── Schémas Pydantic ──────────────────────────────────────────────────────────
 
 class ScoreCompatibiliteRead(SQLModel):
     id_score: UUID
@@ -80,3 +92,5 @@ class ScoreCompatibiliteRead(SQLModel):
     classement: Optional[int]
     motif_veto: Optional[str]
     justification_ia: Optional[str]
+    points_forts: Optional[list[str]]
+    points_attention: Optional[list[str]]

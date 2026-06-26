@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field
-from sqlalchemy import Column, String, Float, ForeignKey, text
+from sqlalchemy import Column, String, Float, Text, ForeignKey, text
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from typing import Optional
 from uuid import UUID, uuid4
@@ -16,6 +16,7 @@ class Recommandation(SQLModel, table=True):
     statut : 'generee' | 'consultee' | 'archivee'
     version_algo : ex '1.0', '1.1', '2.0'
     score_max : meilleur score_weighted parmi les filières du Top 3
+    rapport_synthese : texte global généré par le LLM résumant le profil
     """
     __tablename__ = "recommandation"
 
@@ -56,9 +57,14 @@ class Recommandation(SQLModel, table=True):
             server_default="generee",
         )
     )
+    # Synthèse globale du profil générée par le LLM (2-3 phrases)
+    rapport_synthese: Optional[str] = Field(
+        default=None,
+        sa_column=Column(Text, nullable=True),
+    )
 
 
-# ─── Schémas Pydantic ─────────────────────────────────────────────────────────
+# ─── Schémas Pydantic ──────────────────────────────────────────────────────────
 
 class RecommandationRead(SQLModel):
     id_recommandation: UUID
@@ -67,3 +73,4 @@ class RecommandationRead(SQLModel):
     version_algo: Optional[str]
     score_max: Optional[float]
     statut: str
+    rapport_synthese: Optional[str]
