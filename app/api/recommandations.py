@@ -20,12 +20,8 @@ from app.models.recommandation import Recommandation, RecommandationRead
 from app.models.score_compatibilite import ScoreCompatibilite
 from app.models.profil_psychometrique import ProfilPsychometrique
 from app.models.bachelier import Bachelier
-<<<<<<< HEAD
 from app.models.filiere import Filiere
-from app.scoring.cosinus import toutes_filieres_scorees          # lit depuis DB PostgreSQL
-=======
 from app.scoring.cosinus import toutes_filieres_scorees
->>>>>>> 258ec5d (Ajout des nouvelles fonctionnalités)
 from app.scoring.veto import appliquer_veto
 from app.scoring.prompt_builder import construire_prompt_llm, construire_prompt_mistral
 
@@ -292,7 +288,6 @@ def get_recommandation(
         raise HTTPException(404, "Recommandation introuvable")
     if str(rec.id_bachelier) != current_user["sub"]:
         raise HTTPException(403, "Accès interdit")
-<<<<<<< HEAD
 
     # Marquer comme consultée
     if rec.statut == "generee":
@@ -343,11 +338,4 @@ def get_recommandation(
         "scores":            scores,
         "eliminees":         eliminees,
     }
-=======
-    if rec.statut == "generee":
-        rec.statut = "consultee"
-        session.add(rec)
-        session.commit()
-        session.refresh(rec)
-    return rec
->>>>>>> 258ec5d (Ajout des nouvelles fonctionnalités)
+
