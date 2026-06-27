@@ -6,6 +6,7 @@ from app.core.dependencies import get_current_bachelier
 from app.models.bachelier import Bachelier, BachelierCreate, BachelierRead
 from app.models.administrateur import Administrateur
 from app.models.representant_universite import RepresentantUniversite, RepresentantCreate
+from app.models.demande_representant import DemandeRepresentantCreate
 from app.services.email_service import send_otp_bachelier
 from pydantic import BaseModel
 import random
@@ -222,3 +223,92 @@ def representant_register(data: RepresentantCreate, session: Session = Depends(g
         access_token=token, role="representant",
         nom=rep.nom, prenom=rep.prenom, id_universite=str(rep.id_universite),
     )
+
+# ─── Devenir représentant (CU06 : demande d'accréditation) ────────────────────
+# Workflow self-service : le futur représentant soumet une demande qui part en
+# validation chez l'Administrateur (CU10). AUCUN compte n'est créé tant que la
+# demande n'est pas validée — le demandeur n'a donc pas d'accès à ce stade.
+
+@router.post(
+    "/devenir-representant",
+    status_code=status.HTTP_201_CREATED,
+    summary="Soumettre une demande pour devenir représentant d'université",
+)
+def devenir_representant(data: DemandeRepresentantCreate, session: Session = Depends(get_session)):
+    from app.models.demande_representant import DemandeRepresentant
+    from app.models.universite import Universite
+    from app.models.administrateur import Administrateur
+    from app.models.notification import creer_notification
+    from uuid import UUID as _UUID
+
+    # 1. L'email ne doit pas déjà correspondre à un compte actif
+    if email_deja_utilise(data.email, session):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Un compte existe déjà avec cet email",
+        )
+
+    # 2. Refuser une demande déjà en attente pour le même email
+    demande_existante = session.exec(
+        select(DemandeRepresentant)
+        .where(DemandeRepresentant.email == data.email)
+        .where(DemandeRepresentant.statut == "en_attente")
+    ).first()
+    if demande_existante:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Une demande est déjà en cours de traitement pour cet email",
+        )
+
+    # 3. Vérifier la cohérence de l'établissement (existant OU proposé)
+    nom_etablissement = None
+    if data.id_universite:
+        universite = session.get(Universite, data.id_universite)
+        if not universite:
+            raise HTTPException(status_code=404, detail="Université introuvable")
+        nom_etablissement = universite.nom
+    elif data.universite_proposee_nom:
+        nom_etablissement = data.universite_proposee_nom
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Indiquez une université existante (id_universite) ou proposez-en une (universite_proposee_nom)",
+        )
+
+    # 4. Créer la demande EN ATTENTE (pas de compte créé)
+    demande = DemandeRepresentant(
+        nom=data.nom,
+        prenom=data.prenom,
+        email=data.email,
+        telephone=data.telephone,
+        mot_de_passe_hash=hash_password(data.mot_de_passe),
+        fonction=data.fonction,
+        id_universite=data.id_universite,
+        universite_proposee_nom=data.universite_proposee_nom,
+        universite_proposee_ville=data.universite_proposee_ville,
+        dossier=data.dossier,
+        statut="en_attente",
+    )
+    session.add(demande)
+    session.flush()
+
+    # 5. Notifier tous les administrateurs
+    admins = session.exec(select(Administrateur)).all()
+    for a in admins:
+        creer_notification(
+            session=session,
+            destinataire_id=a.id_administrateur,
+            destinataire_role="administrateur",
+            type="demande_representant",
+            titre="Nouvelle demande de représentant 🏛️",
+            message=f"{data.prenom} {data.nom} demande à représenter {nom_etablissement}. En attente de validation.",
+        )
+
+    session.commit()
+    session.refresh(demande)
+
+    return {
+        "message": "Votre demande a été soumise. Vous serez notifié après validation par l'administrateur.",
+        "id_demande": str(demande.id_demande),
+        "statut": demande.statut,
+    }

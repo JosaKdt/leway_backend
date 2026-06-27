@@ -9,6 +9,11 @@ from app.models.recommandation import Recommandation, RecommandationRead
 from app.models.score_compatibilite import ScoreCompatibilite, ScoreCompatibiliteRead
 from app.models.favoris import Favoris, FavorisCreate, FavorisRead
 from app.models.representant_universite import RepresentantUniversite
+from app.models.demande_representant import (
+    DemandeRepresentant,
+    DemandeRepresentantCreate,
+    DemandeRepresentantRead,
+)
 
 __all__ = [
     # Tables

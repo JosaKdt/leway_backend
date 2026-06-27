@@ -28,9 +28,9 @@ with Session(engine) as s:
             # Mettre à jour les score_compatibilite qui référencent f_del → f_keep
             s.exec(text(
                 "UPDATE score_compatibilite SET id_filiere = :keep WHERE id_filiere = :del"
-            ).bindparams(keep=f_keep.id_filiere, del_=f_del.id_filiere))
+            ).bindparams(keep=f_keep.id_filiere, id_del=f_del.id_filiere))
             # Supprimer les formations liées à f_del
-            s.exec(text("DELETE FROM formation WHERE id_filiere = :del").bindparams(del_=f_del.id_filiere))
+            s.exec(text("DELETE FROM formation WHERE id_filiere = :del").bindparams(id_del=f_del.id_filiere))
             # Supprimer la filière doublon
             s.delete(f_del)
             s.commit()

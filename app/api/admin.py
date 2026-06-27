@@ -11,6 +11,11 @@ from app.models.filiere import Filiere, FiliereCreate, FiliereRead
 from app.models.universite import Universite, UniversiteCreate, UniversiteRead
 from app.models.recommandation import Recommandation
 from app.models.representant_universite import RepresentantUniversite
+from app.models.demande_representant import (
+    DemandeRepresentant,
+    DemandeRepresentantRead,
+    RefusDemandeRequest,
+)
 from app.models.notification import creer_notification
 from app.services.email_service import send_invitation_representant, generate_temp_password
 
@@ -363,3 +368,183 @@ def list_representants(session: Session = Depends(get_session), admin=Depends(re
         }
         for r in reps
     ]
+
+# ─── Demandes de représentant (CU06 → CU10) ───────────────────────────────────
+
+@router.get(
+    "/demandes-representants",
+    summary="Admin — demandes de représentant en attente",
+)
+def admin_demandes_representants(
+    statut: str = "en_attente",
+    session: Session = Depends(get_session),
+    admin=Depends(require_admin),
+):
+    """Liste les demandes par statut (en_attente | validee | refusee)."""
+    demandes = session.exec(
+        select(DemandeRepresentant)
+        .where(DemandeRepresentant.statut == statut)
+        .order_by(DemandeRepresentant.created_at)
+    ).all()
+
+    resultat = []
+    for d in demandes:
+        # Nom de l'établissement (existant ou proposé)
+        if d.id_universite:
+            univ = session.get(Universite, d.id_universite)
+            etablissement = univ.nom if univ else "—"
+            etablissement_type = "existant"
+        else:
+            etablissement = d.universite_proposee_nom or "—"
+            etablissement_type = "proposé"
+
+        resultat.append({
+            "id_demande":     str(d.id_demande),
+            "nom":            d.nom,
+            "prenom":         d.prenom,
+            "email":          d.email,
+            "telephone":      d.telephone,
+            "fonction":       d.fonction,
+            "etablissement":  etablissement,
+            "etablissement_type": etablissement_type,
+            "ville_proposee": d.universite_proposee_ville,
+            "dossier":        d.dossier,
+            "statut":         d.statut,
+            "created_at":     str(d.created_at),
+        })
+
+    return resultat
+
+
+@router.patch(
+    "/demandes-representants/{id_demande}/valider",
+    summary="Admin — valider une demande et créer le compte représentant",
+)
+def admin_valider_demande_representant(
+    id_demande: UUID,
+    session: Session = Depends(get_session),
+    admin=Depends(require_admin),
+):
+    from datetime import datetime, timezone
+
+    demande = session.get(DemandeRepresentant, id_demande)
+    if not demande:
+        raise HTTPException(status_code=404, detail="Demande introuvable")
+    if demande.statut != "en_attente":
+        raise HTTPException(status_code=400, detail="Cette demande a déjà été traitée")
+
+    # Sécurité : l'email ne doit pas avoir été pris entre-temps
+    if email_deja_utilise(demande.email, session):
+        raise HTTPException(status_code=409, detail="Un compte existe déjà avec cet email")
+
+    # 1. Résoudre l'établissement : existant ou à créer
+    if demande.id_universite:
+        universite = session.get(Universite, demande.id_universite)
+        if not universite:
+            raise HTTPException(status_code=404, detail="Université liée introuvable")
+    else:
+        # Créer la nouvelle université proposée (accréditation à valider ensuite)
+        universite = Universite(
+            nom=demande.universite_proposee_nom,
+            localisation=demande.universite_proposee_ville,
+            accreditation_mesrs=False,
+            accreditation_cames=False,
+        )
+        session.add(universite)
+        session.flush()
+
+    # 2. Créer le compte représentant (réutilise le mot de passe déjà haché)
+    rep = RepresentantUniversite(
+        nom=demande.nom,
+        prenom=demande.prenom,
+        email=demande.email,
+        mot_de_passe_hash=demande.mot_de_passe_hash,
+        id_universite=universite.id_universite,
+    )
+    session.add(rep)
+
+    # 3. Clore la demande
+    demande.statut = "validee"
+    demande.traite_at = datetime.now(timezone.utc)
+    if not demande.id_universite:
+        demande.id_universite = universite.id_universite
+    session.add(demande)
+    session.flush()
+
+    # 4. Notifier le représentant (in-app)
+    creer_notification(
+        session=session,
+        destinataire_id=rep.id_representant,
+        destinataire_role="representant",
+        type="demande_validee",
+        titre="Demande acceptée ✅",
+        message=f"Votre demande pour représenter {universite.nom} a été acceptée. Vous pouvez désormais vous connecter avec votre email et votre mot de passe.",
+    )
+
+    session.commit()
+    session.refresh(rep)
+
+    # 5. Notifier par email (best-effort, ne bloque pas la validation)
+    email_ok = False
+    try:
+        from app.services.email_service import send_demande_representant_validee
+        email_ok = send_demande_representant_validee(
+            nom=rep.nom, prenom=rep.prenom, email=rep.email, nom_universite=universite.nom,
+        )
+    except Exception:
+        email_ok = False
+
+    return {
+        "message": "Demande validée, compte représentant créé.",
+        "email_envoye": email_ok,
+        "representant": {
+            "id":         str(rep.id_representant),
+            "nom":        rep.nom,
+            "prenom":     rep.prenom,
+            "email":      rep.email,
+            "universite": universite.nom,
+        },
+    }
+
+
+@router.patch(
+    "/demandes-representants/{id_demande}/refuser",
+    summary="Admin — refuser une demande de représentant",
+)
+def admin_refuser_demande_representant(
+    id_demande: UUID,
+    data: RefusDemandeRequest = RefusDemandeRequest(),
+    session: Session = Depends(get_session),
+    admin=Depends(require_admin),
+):
+    from datetime import datetime, timezone
+
+    demande = session.get(DemandeRepresentant, id_demande)
+    if not demande:
+        raise HTTPException(status_code=404, detail="Demande introuvable")
+    if demande.statut != "en_attente":
+        raise HTTPException(status_code=400, detail="Cette demande a déjà été traitée")
+
+    demande.statut = "refusee"
+    demande.motif_refus = data.motif_refus
+    demande.traite_at = datetime.now(timezone.utc)
+    session.add(demande)
+
+    session.commit()
+
+    # Notifier par email (best-effort)
+    email_ok = False
+    try:
+        from app.services.email_service import send_demande_representant_refusee
+        email_ok = send_demande_representant_refusee(
+            nom=demande.nom, prenom=demande.prenom, email=demande.email,
+            motif=data.motif_refus or "Dossier incomplet",
+        )
+    except Exception:
+        email_ok = False
+
+    return {
+        "message": "Demande refusée.",
+        "email_envoye": email_ok,
+        "id_demande": str(id_demande),
+    }

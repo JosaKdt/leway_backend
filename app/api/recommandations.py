@@ -251,6 +251,7 @@ def get_recommandation(
         if sc.classement is not None:
             scores.append({
                 "classement":          sc.classement,
+                "id_filiere":          str(fil.id_filiere),
                 "nom":                 fil.nom,
                 "domaine":             fil.domaine,
                 "weighted_score":      sc.score_weighted,

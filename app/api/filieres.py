@@ -94,3 +94,62 @@ def comparer_filieres(
     # Conserver l'ordre de la requête
     ordre = {nom: i for i, nom in enumerate(data.noms)}
     return sorted(filieres, key=lambda f: ordre.get(f.nom, 99))
+
+
+# ─── GET /api/filieres/{id}/universites ───────────────────────────────────────
+# « Où étudier ça ? » — liste les universités qui dispensent une formation
+# dans cette filière, avec frais, durée réelle, diplôme et places.
+
+@router.get(
+    "/{id_filiere}/universites",
+    summary="Où étudier cette filière — universités qui la dispensent",
+)
+def universites_de_la_filiere(
+    id_filiere: UUID,
+    session: Session = Depends(get_session),
+):
+    from app.models.formation import Formation
+    from app.models.universite import Universite
+
+    filiere = session.get(Filiere, id_filiere)
+    if not filiere:
+        raise HTTPException(status_code=404, detail="Filière introuvable")
+
+    formations = session.exec(
+        select(Formation).where(Formation.id_filiere == id_filiere)
+    ).all()
+
+    resultat = []
+    for fo in formations:
+        univ = session.get(Universite, fo.id_universite)
+        if not univ:
+            continue
+        resultat.append({
+            "id_universite":     str(univ.id_universite),
+            "nom":               univ.nom,
+            "type":              univ.type,
+            "localisation":      univ.localisation,
+            "taux_reussite":     univ.taux_reussite,
+            "accreditation_mesrs": univ.accreditation_mesrs,
+            "accreditation_cames": univ.accreditation_cames,
+            # Données propres à la formation (filière dans CETTE université)
+            "diplome":           fo.diplome,
+            "frais_inscription": fo.frais_inscription,
+            "duree_reelle":      fo.duree_reelle,
+            "places_disponibles": fo.places_disponibles,
+            # Fourchette de coût annuel de l'université (repli si frais non saisis)
+            "cout_annuel_min":   univ.cout_annuel_min,
+            "cout_annuel_max":   univ.cout_annuel_max,
+        })
+
+    # Trier : universités accréditées MESRS d'abord, puis par frais croissants
+    resultat.sort(key=lambda u: (
+        not bool(u["accreditation_mesrs"]),
+        u["frais_inscription"] if u["frais_inscription"] is not None else 10**9,
+    ))
+
+    return {
+        "filiere": filiere.nom,
+        "nombre_universites": len(resultat),
+        "universites": resultat,
+    }
