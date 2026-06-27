@@ -32,6 +32,7 @@ class OllamaProvider(LLMProvider):
             )
             resp.raise_for_status()
             raw = resp.json().get("response", "{}")
+            print(f"[OLLAMA RAW] {raw[:300]}") 
             raw = raw.replace("```json", "").replace("```", "").strip()
             return json.loads(raw)
 
@@ -46,8 +47,10 @@ class OllamaProvider(LLMProvider):
         try:
             from app.scoring.prompt_builder import construire_prompt_mistral
             prompt = construire_prompt_mistral(scores, top3, dim_dominante, serie_bac)
+            print(f"[OLLAMA] Appel Mistral — {len(prompt)} caractères")
             return await self.generer_rapport(prompt)
         except Exception as e:
+            print(f"[OLLAMA] ERREUR: {type(e).__name__}: {e}")
             return self._fallback(scores, top3, dim_dominante, str(e))
 
     def _fallback(

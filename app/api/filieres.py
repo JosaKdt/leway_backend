@@ -7,6 +7,8 @@ from app.core.database import get_session
 from app.core.dependencies import get_current_bachelier
 from app.models.filiere import Filiere, FiliereCreate, FiliereRead
 from app.models.bachelier import Bachelier
+from app.models.formation import Formation
+from app.models.universite import Universite
 
 router = APIRouter()
 
@@ -51,6 +53,64 @@ def get_filiere(
             detail="Filière introuvable",
         )
     return filiere
+
+
+# ─── GET /api/filieres/{id}/universites ───────────────────────────────────────
+@router.get(
+    "/{id_filiere}/universites",
+    summary="Universités proposant cette filière",
+)
+def get_universites_pour_filiere(
+    id_filiere: UUID,
+    session: Session = Depends(get_session),
+):
+    """
+    Retourne la liste des universités proposant cette filière,
+    avec les détails spécifiques de chaque formation (frais, durée).
+    Permet au bachelier de savoir OÙ étudier une filière recommandée.
+    """
+    filiere = session.get(Filiere, id_filiere)
+    if not filiere:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Filière introuvable",
+        )
+
+    formations = session.exec(
+        select(Formation).where(Formation.id_filiere == id_filiere)
+    ).all()
+
+    if not formations:
+        return {
+            "id_filiere": str(id_filiere),
+            "nom_filiere": filiere.nom,
+            "universites": [],
+            "message": "Aucune université ne propose actuellement cette filière.",
+        }
+
+    resultats = []
+    for f in formations:
+        universite = session.get(Universite, f.id_universite)
+        if not universite:
+            continue
+        resultats.append({
+            "id_universite":        str(universite.id_universite),
+            "nom_universite":       universite.nom,
+            "localisation":        universite.localisation,
+            "type":                 universite.type,
+            "accreditation_mesrs":  universite.accreditation_mesrs,
+            "accreditation_cames":  universite.accreditation_cames,
+            "diplome":              f.diplome,
+            "frais_inscription":    f.frais_inscription,
+            "duree_reelle":         f.duree_reelle,
+            "places_disponibles":   f.places_disponibles,
+        })
+
+    return {
+        "id_filiere":   str(id_filiere),
+        "nom_filiere":  filiere.nom,
+        "universites":  resultats,
+    }
 
 
 # ─── POST /api/filieres ───────────────────────────────────────────────────────

@@ -98,17 +98,21 @@ def get_stats(
             "message": "Aucune formation enregistree pour cette universite.",
         }
 
-    scores = session.exec(
+    # Tous les scores pour le score moyen
+    tous_scores = session.exec(
         select(ScoreCompatibilite).where(
             ScoreCompatibilite.id_filiere.in_(ids_filieres)
         )
     ).all()
 
-    leads_total = len(scores)
-    leads_top1  = sum(1 for s in scores if s.classement == 1)
+    # Uniquement les scores classés (top réel — classement non null)
+    scores_classes = [s for s in tous_scores if s.classement is not None]
+
+    leads_total = len(scores_classes)
+    leads_top1  = sum(1 for s in scores_classes if s.classement == 1)
     score_moyen = round(
-        sum(s.score_weighted or 0 for s in scores) / leads_total, 2
-    ) if leads_total > 0 else 0.0
+        sum(s.score_weighted or 0 for s in tous_scores) / len(tous_scores), 2
+    ) if tous_scores else 0.0
 
     return {
         "universite_id": str(id_universite),
@@ -288,11 +292,7 @@ def add_filiere(
     }
 
 
-
-# ─── Ajouter cette route dans representants.py ───────────────────────────────
-# Import à ajouter en haut si pas déjà présent :
-# from app.core.security import verify_password, hash_password
-# from pydantic import BaseModel as PydanticBase
+# ─── Changer mot de passe ─────────────────────────────────────────────────────
 
 class ChangerMotDePasseRequest(PydanticBase):
     ancien_mot_de_passe: str
@@ -309,19 +309,16 @@ def changer_mot_de_passe(
     representant: RepresentantUniversite = Depends(require_representant),
     session: Session = Depends(get_session),
 ):
-    # Vérifier l'ancien mot de passe
     if not verify_password(data.ancien_mot_de_passe, representant.mot_de_passe_hash):
         raise HTTPException(status_code=400, detail="Ancien mot de passe incorrect")
 
-    # Vérifier la confirmation
     if data.nouveau_mot_de_passe != data.confirmation:
         raise HTTPException(status_code=400, detail="Les mots de passe ne correspondent pas")
 
-    # Vérifier longueur minimale
     if len(data.nouveau_mot_de_passe) < 6:
-        raise HTTPException(status_code=400, detail="Le mot de passe doit contenir au moins 6 caractères")
+        raise HTTPException(status_code=400, detail="Le mot de passe doit contenir au moins 6 caracteres")
 
     representant.mot_de_passe_hash = hash_password(data.nouveau_mot_de_passe)
     session.add(representant)
     session.commit()
-    return {"message": "Mot de passe modifié avec succès"}
+    return {"message": "Mot de passe modifie avec succes"}

@@ -269,14 +269,19 @@ def filieres_populaires(session: Session = Depends(get_session), admin=Depends(r
         .limit(10)
     ).all()
 
-    return [
-        {
-            "id_filiere": str(r.id_filiere),
-            "nb_fois_top1": r.nb_recommandations,
+    # Récupérer le nom de chaque filière (jointure manuelle pour rester simple)
+    reponse = []
+    for r in resultats:
+        filiere = session.get(Filiere, r.id_filiere)
+        reponse.append({
+            "id_filiere":          str(r.id_filiere),
+            "nom_filiere":         filiere.nom if filiere else "Filière supprimée",
+            "domaine":             filiere.domaine if filiere else None,
+            "nb_fois_top1":        r.nb_recommandations,
             "score_weighted_moyen": round(r.score_moyen or 0, 2),
-        }
-        for r in resultats
-    ]
+        })
+
+    return reponse
 
 
 # ─── Invitation représentant ──────────────────────────────────────────────────

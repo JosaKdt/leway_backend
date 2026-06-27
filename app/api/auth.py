@@ -11,6 +11,8 @@ from app.services.email_service import send_otp_bachelier
 from pydantic import BaseModel
 import random
 from datetime import datetime, timedelta, timezone
+from uuid import UUID
+from app.core.security import hash_password, verify_password, create_access_token, get_current_user
 
 router = APIRouter()
 
@@ -312,3 +314,29 @@ def devenir_representant(data: DemandeRepresentantCreate, session: Session = Dep
         "id_demande": str(demande.id_demande),
         "statut": demande.statut,
     }
+# ─── Changement mot de passe bachelier ───────────────────────────────────────
+
+class ChangerMotDePasseRequest(BaseModel):
+    ancien_mot_de_passe: str
+    nouveau_mot_de_passe: str
+    confirmation: str
+
+@router.patch("/changer-mot-de-passe", summary="Changer son mot de passe")
+def changer_mot_de_passe(
+    data: ChangerMotDePasseRequest,
+    session: Session = Depends(get_session),
+    current_user=Depends(get_current_user),
+):
+    bachelier = session.get(Bachelier, UUID(current_user["sub"]))
+    if not bachelier:
+        raise HTTPException(status_code=404, detail="Compte introuvable")
+    if not verify_password(data.ancien_mot_de_passe, bachelier.mot_de_passe_hash):
+        raise HTTPException(status_code=400, detail="Ancien mot de passe incorrect")
+    if data.nouveau_mot_de_passe != data.confirmation:
+        raise HTTPException(status_code=400, detail="Les mots de passe ne correspondent pas")
+    if len(data.nouveau_mot_de_passe) < 6:
+        raise HTTPException(status_code=400, detail="Le mot de passe doit contenir au moins 6 caractères")
+    bachelier.mot_de_passe_hash = hash_password(data.nouveau_mot_de_passe)
+    session.add(bachelier)
+    session.commit()
+    return {"message": "Mot de passe modifié avec succès"}    
